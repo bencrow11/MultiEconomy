@@ -3,14 +3,15 @@ package com.bencrow11.multieconomy.account;
 import com.bencrow11.multieconomy.config.ConfigManager;
 import com.bencrow11.multieconomy.currency.Currency;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.HashMap;
 
 public class Account {
-	private final PlayerEntity owner;
-	private HashMap<Currency, Float> balances;
+	private final ServerPlayerEntity owner;
+	private HashMap<Currency, Float> balances = new HashMap<>();
 
-	public Account(PlayerEntity owner) {
+	public Account(ServerPlayerEntity owner) {
 		this.owner = owner;
 
 		for (Currency currency : ConfigManager.getConfig().getCurrencies()) {
@@ -18,7 +19,7 @@ public class Account {
 		}
 	}
 
-	public PlayerEntity getOwner() {
+	public ServerPlayerEntity getOwner() {
 		return owner;
 	}
 

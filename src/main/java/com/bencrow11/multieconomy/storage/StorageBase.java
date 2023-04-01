@@ -1,15 +1,15 @@
 package com.bencrow11.multieconomy.storage;
 
 import com.bencrow11.multieconomy.account.Account;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.HashMap;
 
 public interface StorageBase {
 
-	Account getAccount(PlayerEntity player);
+	Account getAccount(ServerPlayerEntity player);
 
 	boolean updateAccount(Account account);
 
-	HashMap<PlayerEntity, Account> getAll();
+	HashMap<ServerPlayerEntity, Account> getAll();
 }

@@ -1,7 +1,7 @@
 package com.bencrow11.multieconomy.storage;
 
 import com.bencrow11.multieconomy.account.Account;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.HashMap;
 
@@ -14,7 +14,7 @@ public class StorageJSON implements StorageBase {
 	}
 
 	@Override
-	public Account getAccount(PlayerEntity player) {
+	public Account getAccount(ServerPlayerEntity player) {
 		return null;
 	}
 
@@ -24,7 +24,7 @@ public class StorageJSON implements StorageBase {
 	}
 
 	@Override
-	public HashMap<PlayerEntity, Account> getAll() {
+	public HashMap<ServerPlayerEntity, Account> getAll() {
 		return null;
 	}
 }

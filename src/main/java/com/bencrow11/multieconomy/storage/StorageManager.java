@@ -2,7 +2,7 @@ package com.bencrow11.multieconomy.storage;
 
 import com.bencrow11.multieconomy.account.Account;
 import com.bencrow11.multieconomy.config.ConfigManager;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.HashMap;
 
@@ -16,11 +16,11 @@ public abstract class StorageManager {
 		storage.updateAccount(account);
 	}
 
-	public static Account readAccount(PlayerEntity player) {
+	public static Account readAccount(ServerPlayerEntity player) {
 		return storage.getAccount(player);
 	}
 
-	public static HashMap<PlayerEntity, Account> getAllAccounts() {
+	public static HashMap<ServerPlayerEntity, Account> getAllAccounts() {
 		return storage.getAll();
 	}
 }

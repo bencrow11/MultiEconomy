@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "multieconomy",
+  "version": "${version}",
+  "name": "Multieconomy",
+  "description": "A Fabric economy mod that allows multiple configurable currencies.",
+  "authors": [
+    "bencrow11"
+  ],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/multieconomy/icon.png",
+  "environment": "server",
+  "entrypoints": {
+    "client": [
+      "com.bencrow11.multieconomy.client.MultieconomyClient"
+    ],
+    "main": [
+      "com.bencrow11.multieconomy.Multieconomy"
+    ]
+  },
+  "mixins": [
+    "multieconomy.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.19",
+    "fabric": "*",
+    "minecraft": "1.19.4"
+  }
+}

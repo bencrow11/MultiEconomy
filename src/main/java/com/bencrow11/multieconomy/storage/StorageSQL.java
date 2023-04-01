@@ -1,7 +1,12 @@
 package com.bencrow11.multieconomy.storage;
 
+import com.bencrow11.multieconomy.account.Account;
+import net.minecraft.entity.player.PlayerEntity;
+
+import java.util.HashMap;
+
 // Class that stores SQL connection data
-public class StorageSQL {
+public class StorageSQL implements StorageBase {
 
 	private final String database;
 	private final String hostname;
@@ -17,23 +22,18 @@ public class StorageSQL {
 		this.username = username;
 	}
 
-	public String getDatabase() {
-		return database;
+	@Override
+	public Account getAccount(PlayerEntity player) {
+		return null;
 	}
 
-	public String getHostname() {
-		return hostname;
+	@Override
+	public boolean updateAccount(Account account) {
+		return false;
 	}
 
-	public String getPassword() {
-		return password;
-	}
-
-	public String getPort() {
-		return port;
-	}
-
-	public String getUsername() {
-		return username;
+	@Override
+	public HashMap<PlayerEntity, Account> getAll() {
+		return null;
 	}
 }

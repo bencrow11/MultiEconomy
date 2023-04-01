@@ -5,13 +5,12 @@ import com.bencrow11.multieconomy.currency.Currency;
 import com.bencrow11.multieconomy.storage.StorageSQL;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import net.minecraft.util.math.ColorHelper;
 
 import java.io.*;
 import java.util.ArrayList;
 
 public abstract class ConfigManager {
-	static Config multiEcoConfig;
+	private static Config multiEcoConfig;
 
 	public static boolean loadConfig() {
 
@@ -84,4 +83,9 @@ public abstract class ConfigManager {
 		Multieconomy.LOGGER.error("Multicurrency default currency is missing or doesn't match any existing currencies.");
 		return false;
 	}
+
+	public static Config getConfig() {
+		return ConfigManager.multiEcoConfig;
+	}
+
 }

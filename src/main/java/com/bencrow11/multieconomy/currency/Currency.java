@@ -6,7 +6,7 @@ public class Currency {
 	private final String name;
 	private final String singular;
 	private final String plural;
-	private final int startBalance;
+	private final float startBalance;
 	private final boolean allowPayments;
 
 	public Currency(String name, String singular, String plural, int startBalance, boolean allowPayments) {
@@ -29,7 +29,7 @@ public class Currency {
 		return plural;
 	}
 
-	public int getStartBalance() {
+	public float getStartBalance() {
 		return startBalance;
 	}
 

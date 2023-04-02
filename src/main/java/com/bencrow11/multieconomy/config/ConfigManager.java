@@ -8,9 +8,17 @@ import com.google.gson.GsonBuilder;
 import java.io.*;
 import java.util.ArrayList;
 
+/**
+ * Manager class to load, write and store the config.
+ */
 public abstract class ConfigManager {
+	// The field that will store the config.
 	private static Config multiEcoConfig;
 
+	/**
+	 * Method to load the config and store it into the multiEcoConfig field.
+	 * @return true if the config loaded correctly.
+	 */
 	public static boolean loadConfig() {
 
 		String root = new File("").getAbsolutePath();
@@ -45,6 +53,10 @@ public abstract class ConfigManager {
 		}
 	}
 
+	/**
+	 * Method to create a new config file.
+	 * @param path the filepath that should be used.
+	 */
 	public static void createConfigFile(String path){
 		File dir = new File(path);
 		File file = new File(dir, "config.json");
@@ -67,6 +79,10 @@ public abstract class ConfigManager {
 		}
 	}
 
+	/**
+	 * Method to check the config is valid.
+	 * @return true if the config is valid.
+	 */
 	public static boolean checkConfig(){
 		ArrayList<Currency> currencies = ConfigManager.multiEcoConfig.getCurrencies();
 		String defaultCurrency = ConfigManager.multiEcoConfig.getDefaultCurrency().trim().toLowerCase();

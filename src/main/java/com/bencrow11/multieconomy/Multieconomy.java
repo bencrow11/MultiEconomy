@@ -16,7 +16,7 @@ public class Multieconomy implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		ConfigManager.loadConfig();
-//		AccountManager.initialise(StorageManager.getAllAccounts());
+		AccountManager.initialise(StorageManager.getAllAccounts());
 		ServerPlayConnectionEvents.JOIN.register(new PlayerJoinHandler());
 	}
 

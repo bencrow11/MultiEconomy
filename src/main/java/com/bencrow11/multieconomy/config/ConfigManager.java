@@ -2,7 +2,6 @@ package com.bencrow11.multieconomy.config;
 
 import com.bencrow11.multieconomy.Multieconomy;
 import com.bencrow11.multieconomy.currency.Currency;
-import com.bencrow11.multieconomy.storage.StorageSQL;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -57,9 +56,7 @@ public abstract class ConfigManager {
 			ArrayList<Currency> defaultCurrencies = new ArrayList<>();
 			defaultCurrencies.add(new Currency("dollars", "dollar", "dollars", 100, true));
 
-			Config defaultConfig = new Config(true, false,
-					new StorageSQL("database", "hostname", "password", "3306", "username"),
-					"dollars", defaultCurrencies);
+			Config defaultConfig = new Config(true, "dollars", defaultCurrencies);
 
 			Gson gson = new GsonBuilder().setPrettyPrinting().create();
 			gson.toJson(defaultConfig, writer);

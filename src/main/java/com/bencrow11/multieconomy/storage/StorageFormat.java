@@ -24,6 +24,11 @@ public class StorageFormat {
 		for (Currency currency : account.getBalances().keySet()) {
 			balances.put(currency.getName(), account.getBalance(currency));
 		}
+
+		// Adds the unavailable balances to the balances list to save.
+		for (String unavailableCurrency : account.getUnavailableBalances().keySet()) {
+			balances.put(unavailableCurrency, account.getUnavailableBalances().get(unavailableCurrency));
+		}
 	}
 
 	/**

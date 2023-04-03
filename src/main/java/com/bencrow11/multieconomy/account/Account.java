@@ -15,6 +15,7 @@ import java.util.UUID;
 public class Account {
 	private final UUID owner; // The UUID of the player who owns the account
 	private HashMap<Currency, Float> balances = new HashMap<>(); // The balances for each currency
+	private HashMap<String, Float> unavailableBalances = new HashMap<>(); // The balances that no longer exist
 
 	/**
 	 * Constructor for creating a new account. Used for new players.
@@ -51,12 +52,30 @@ public class Account {
 				}
 			}
 
-			// If the currency can not be found, log that it wasn't found.
+			// If the currency from storage can not be found in the config, add it to unavailable balances and log
+			// that it couldn't be found.
 			if (!found) {
-				Multieconomy.LOGGER.error("Currency " + currencyName + " was not found in the config.");
+				unavailableBalances.put(currencyName, storedBalances.get(currencyName));
+				Multieconomy.LOGGER.error("Currency " + currencyName + " was not found in the config for UUID " +
+					account.getOwner() + ".");
 			}
 		}
 
+		boolean newCurrency = false;
+
+		// If the player has no balance for a currency in the config, add it.
+		for (Currency currency : configCurrencies) {
+			if (!balances.containsKey(currency)) {
+				balances.put(new Currency(currency.getName(), currency.getSingular(), currency.getPlural(),
+						(int) currency.getStartBalance(), currency.isAllowPayments()), currency.getStartBalance());
+				newCurrency = true;
+			}
+		}
+
+		// If a new currency has been created for the user, save their new data to storage.
+		if (newCurrency) {
+			AccountManager.updateAccount(this);
+		}
 	}
 
 	/**
@@ -73,6 +92,14 @@ public class Account {
 	 */
 	public HashMap<Currency, Float> getBalances() {
 		return balances;
+	}
+
+	/**
+	 * Getter for the owners unavailable balances.
+	 * @return HashMap of unavailable balances the player has.
+	 */
+	public HashMap<String, Float> getUnavailableBalances() {
+		return unavailableBalances;
 	}
 
 	/**

@@ -51,4 +51,18 @@ public class Config {
 	public ArrayList<Currency> getCurrencies() {
 		return currencies;
 	}
+
+	/**
+	 * Getter for currency names.
+	 * @return ArrayList of all the currency names available.
+	 */
+	public ArrayList<String> getCurrenciesAsString() {
+		ArrayList<String> strings = new ArrayList<>();
+
+		for (Currency currency : currencies) {
+			strings.add(currency.getName());
+		}
+
+		return strings;
+	}
 }

@@ -48,6 +48,8 @@ public abstract class ConfigManager {
 			return true;
 
 		} catch (Exception e) {
+			Multieconomy.LOGGER.fatal("MultiEconomy config could not be loaded properly. Please check the config or " +
+					"generate a new one.");
 			e.printStackTrace();
 			return false;
 		}
@@ -93,7 +95,8 @@ public abstract class ConfigManager {
 				return true;
 			}
 		}
-		Multieconomy.LOGGER.error("Multicurrency default currency is missing or doesn't match any existing currencies.");
+		Multieconomy.LOGGER.fatal("Multicurrency default currency " + ConfigManager.multiEcoConfig.getDefaultCurrency() +
+				" doesn't match any existing currency name.");
 		return false;
 	}
 

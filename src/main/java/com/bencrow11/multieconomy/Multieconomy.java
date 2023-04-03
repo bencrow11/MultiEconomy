@@ -20,7 +20,7 @@ public class Multieconomy implements ModInitializer {
 		ConfigManager.loadConfig(); // Loads the config from file.
 		AccountManager.initialise(StorageManager.getAllAccounts()); // Adds saved accounts to memory.
 		ServerPlayConnectionEvents.JOIN.register(new PlayerJoinHandler()); // Registers PlayerJoin event handler.
-		AccountManager.updateAccount(AccountManager.getAccount(UUID.fromString("4139d0ef-81e0-4a23-b7cd-d850ced3b55a")));
+		LOGGER.info("MultiEconomy Loaded.");
 	}
 
 }

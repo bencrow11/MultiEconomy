@@ -2,7 +2,6 @@ package com.bencrow11.multieconomy;
 
 import com.bencrow11.multieconomy.account.AccountManager;
 import com.bencrow11.multieconomy.command.CommandUtils;
-import com.bencrow11.multieconomy.command.CurrencyArgumentType;
 import com.bencrow11.multieconomy.config.ConfigManager;
 import com.bencrow11.multieconomy.event.PlayerJoinHandler;
 import com.bencrow11.multieconomy.storage.StorageManager;
@@ -13,8 +12,6 @@ import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.UUID;
 
 public class Multieconomy implements ModInitializer {
 
@@ -28,9 +25,6 @@ public class Multieconomy implements ModInitializer {
 		AccountManager.initialise(StorageManager.getAllAccounts()); // Adds saved accounts to memory.
 		ServerPlayConnectionEvents.JOIN.register(new PlayerJoinHandler()); // Registers PlayerJoin event handler.
 		CommandUtils.registerCommands(); // Registers the commands.
-		ArgumentTypeRegistry.registerArgumentType(new Identifier("currency", "currency"),
-				CurrencyArgumentType.class,
-				ConstantArgumentSerializer.of(CurrencyArgumentType::currency));
 		LOGGER.info("MultiEconomy Loaded.");
 	}
 

@@ -97,6 +97,19 @@ public abstract class ConfigManager {
 		}
 		Multieconomy.LOGGER.fatal("Multicurrency default currency " + ConfigManager.multiEcoConfig.getDefaultCurrency() +
 				" doesn't match any existing currency name.");
+
+		for (int i = 0; i < currencies.toArray().length; i++) {
+			String currentCurrency = currencies.get(i).getName();
+
+			for (int x = i + 1; x < currencies.toArray().length; x++) {
+				String comparedCurrency = currencies.get(x).getName();
+				if (currentCurrency.equals(comparedCurrency)) {
+					Multieconomy.LOGGER.fatal("Found duplicate currency with name: " + currentCurrency);
+					return true;
+				}
+			}
+		}
+
 		return false;
 	}
 

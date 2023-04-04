@@ -22,12 +22,26 @@ public abstract class ErrorManager {
 			return;
 		}
 
-		String outputString = "&4MultiEconomy Errors: \n";
+		String outputString = "§6MultiEconomy Errors: \n§c";
 
 		for (String error : errors) {
 			outputString = outputString + error.trim() + "\n";
 		}
 
-		player.sendMessage(Text.literal(outputString));
+		player.sendMessage(Text.literal(outputString.trim()));
+	}
+
+	public static void printErrorsToConsole() {
+		if (errors.toArray().length == 0) {
+			return;
+		}
+
+		String outputString = "MultiEconomy Errors: \n";
+
+		for (String error : errors) {
+			outputString = outputString + error.trim() + "\n";
+		}
+
+		Multieconomy.LOGGER.error(outputString.trim());
 	}
 }

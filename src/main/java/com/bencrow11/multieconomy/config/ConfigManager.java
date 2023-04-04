@@ -1,6 +1,6 @@
 package com.bencrow11.multieconomy.config;
 
-import com.bencrow11.multieconomy.Multieconomy;
+import com.bencrow11.multieconomy.ErrorManager;
 import com.bencrow11.multieconomy.currency.Currency;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -48,7 +48,7 @@ public abstract class ConfigManager {
 			return true;
 
 		} catch (Exception e) {
-			Multieconomy.LOGGER.fatal("MultiEconomy config could not be loaded properly. Please check the config or " +
+			ErrorManager.addError("MultiEconomy config could not be loaded properly. Please check the config or " +
 					"generate a new one.");
 			e.printStackTrace();
 			return false;
@@ -89,26 +89,26 @@ public abstract class ConfigManager {
 		ArrayList<Currency> currencies = ConfigManager.multiEcoConfig.getCurrencies();
 		String defaultCurrency = ConfigManager.multiEcoConfig.getDefaultCurrency().trim().toLowerCase();
 
-		for (Currency currency : currencies) {
-			String currencyFormatted = currency.getName().trim().toLowerCase();
-			if (currencyFormatted.equals(defaultCurrency)) {
-				return true;
-			}
-		}
-		Multieconomy.LOGGER.fatal("Multicurrency default currency " + ConfigManager.multiEcoConfig.getDefaultCurrency() +
-				" doesn't match any existing currency name.");
-
 		for (int i = 0; i < currencies.toArray().length; i++) {
 			String currentCurrency = currencies.get(i).getName();
 
 			for (int x = i + 1; x < currencies.toArray().length; x++) {
 				String comparedCurrency = currencies.get(x).getName();
 				if (currentCurrency.equals(comparedCurrency)) {
-					Multieconomy.LOGGER.fatal("Found duplicate currency with name: " + currentCurrency);
-					return true;
+					ErrorManager.addError("Found duplicate currency with name: " + currentCurrency);
+					return false;
 				}
 			}
 		}
+
+		for (Currency currency : currencies) {
+			String currencyFormatted = currency.getName().trim().toLowerCase();
+			if (currencyFormatted.equals(defaultCurrency)) {
+				return true;
+			}
+		}
+		ErrorManager.addError("Multicurrency default currency " + ConfigManager.multiEcoConfig.getDefaultCurrency() +
+				" doesn't match any existing currency name.");
 
 		return false;
 	}

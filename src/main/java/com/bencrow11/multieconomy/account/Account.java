@@ -1,5 +1,6 @@
 package com.bencrow11.multieconomy.account;
 
+import com.bencrow11.multieconomy.ErrorManager;
 import com.bencrow11.multieconomy.Multieconomy;
 import com.bencrow11.multieconomy.config.ConfigManager;
 import com.bencrow11.multieconomy.currency.Currency;
@@ -56,8 +57,8 @@ public class Account {
 			// that it couldn't be found.
 			if (!found) {
 				unavailableBalances.put(currencyName, storedBalances.get(currencyName));
-				Multieconomy.LOGGER.error("Currency " + currencyName + " was not found in the config for UUID " +
-					account.getOwner() + ".");
+				ErrorManager.addError("Currency " + currencyName + " was not found in the config for UUID " +
+						account.getOwner() + ".");
 			}
 		}
 

@@ -1,6 +1,6 @@
 package com.bencrow11.multieconomy.account;
 
-import com.bencrow11.multieconomy.Multieconomy;
+import com.bencrow11.multieconomy.ErrorManager;
 import com.bencrow11.multieconomy.storage.StorageManager;
 
 import java.util.HashMap;
@@ -42,7 +42,7 @@ public abstract class AccountManager {
 		boolean success = StorageManager.writeAccount(account);
 
 		if (!success) {
-			Multieconomy.LOGGER.error("Failed to write account to storage for account: " + account.getOwner().toString());
+			ErrorManager.addError("Failed to write account to storage for account: " + account.getOwner().toString());
 			return false;
 		}
 
@@ -59,7 +59,7 @@ public abstract class AccountManager {
 		boolean success = StorageManager.writeAccount(accounts.get(player));
 
 		if (!success) {
-			Multieconomy.LOGGER.error("Failed to write account to storage for account: " + player.toString());
+			ErrorManager.addError("Failed to write account to storage for account: " + player.toString());
 			return null;
 		}
 		return accounts.get(player);

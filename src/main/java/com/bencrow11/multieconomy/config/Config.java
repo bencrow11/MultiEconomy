@@ -65,4 +65,13 @@ public class Config {
 
 		return strings;
 	}
+
+	public Currency getCurrencyByName(String currencyName) {
+		for (Currency currency : currencies) {
+			if (currency.getName().toLowerCase().trim().equals(currencyName.toLowerCase().trim())) {
+				return currency;
+			}
+		}
+		return null;
+	}
 }

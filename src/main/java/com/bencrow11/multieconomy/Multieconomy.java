@@ -4,6 +4,7 @@ import com.bencrow11.multieconomy.account.AccountManager;
 import com.bencrow11.multieconomy.command.CommandUtils;
 import com.bencrow11.multieconomy.config.ConfigManager;
 import com.bencrow11.multieconomy.event.PlayerJoinHandler;
+import com.bencrow11.multieconomy.player.PlayerManager;
 import com.bencrow11.multieconomy.storage.StorageManager;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -22,6 +23,7 @@ public class Multieconomy implements ModInitializer {
 		AccountManager.initialise(StorageManager.getAllAccounts()); // Adds saved accounts to memory.
 		ServerPlayConnectionEvents.JOIN.register(new PlayerJoinHandler()); // Registers PlayerJoin event handler.
 		CommandUtils.registerCommands(); // Registers the commands.
+		PlayerManager.loadFromFile(); // Loads player data from file.
 		LOGGER.info("MultiEconomy Loaded.");
 		ErrorManager.printErrorsToConsole();
 	}

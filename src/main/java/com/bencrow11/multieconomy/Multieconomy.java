@@ -6,12 +6,7 @@ import com.bencrow11.multieconomy.config.ConfigManager;
 import com.bencrow11.multieconomy.event.PlayerJoinHandler;
 import com.bencrow11.multieconomy.storage.StorageManager;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.luckperms.api.LuckPerms;
-import net.luckperms.api.LuckPermsProvider;
-import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
-import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

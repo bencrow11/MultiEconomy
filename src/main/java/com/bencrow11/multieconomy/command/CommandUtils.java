@@ -1,7 +1,6 @@
 package com.bencrow11.multieconomy.command;
 
 import com.bencrow11.multieconomy.Multieconomy;
-import com.bencrow11.multieconomy.command.imp.AddBalanceCommand;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -17,6 +16,6 @@ public abstract class CommandUtils {
 	}
 
 	public static void registerCommands() {
-		CommandRegistrationCallback.EVENT.register(AddBalanceCommand::register);
+		CommandRegistrationCallback.EVENT.register(BaseCommand::register);
 	}
 }

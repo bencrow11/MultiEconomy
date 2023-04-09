@@ -1,11 +1,9 @@
 package com.bencrow11.multieconomy;
 
 import com.bencrow11.multieconomy.account.AccountManager;
-import com.bencrow11.multieconomy.command.CommandUtils;
+import com.bencrow11.multieconomy.command.CommandRegistry;
 import com.bencrow11.multieconomy.config.ConfigManager;
 import com.bencrow11.multieconomy.event.PlayerJoinHandler;
-import com.bencrow11.multieconomy.player.PlayerManager;
-import com.bencrow11.multieconomy.storage.StorageManager;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import org.apache.logging.log4j.LogManager;
@@ -20,10 +18,9 @@ public class Multieconomy implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		ConfigManager.loadConfig(); // Loads the config from file.
-		AccountManager.initialise(StorageManager.getAllAccounts()); // Adds saved accounts to memory.
+		AccountManager.initialise(); // Adds saved accounts to memory.
 		ServerPlayConnectionEvents.JOIN.register(new PlayerJoinHandler()); // Registers PlayerJoin event handler.
-		CommandUtils.registerCommands(); // Registers the commands.
-		PlayerManager.loadFromFile(); // Loads player data from file.
+		CommandRegistry.registerCommands(); // Registers the commands.
 		LOGGER.info("MultiEconomy Loaded.");
 		ErrorManager.printErrorsToConsole();
 	}

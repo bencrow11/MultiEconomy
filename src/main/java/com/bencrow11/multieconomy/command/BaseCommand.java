@@ -2,6 +2,7 @@ package com.bencrow11.multieconomy.command;
 
 import com.bencrow11.multieconomy.Multieconomy;
 import com.bencrow11.multieconomy.command.subcommand.AddBalanceCommand;
+import com.bencrow11.multieconomy.util.Utils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -23,7 +24,7 @@ public abstract class BaseCommand {
 
 				dispatcher.getRoot().addChild(root);
 
-				CommandUtils.registerAliases(dispatcher, root);
+				Utils.registerAliases(dispatcher, root);
 
 				root.addChild(new AddBalanceCommand().build());
 	}

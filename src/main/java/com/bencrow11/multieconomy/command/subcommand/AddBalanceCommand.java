@@ -1,10 +1,9 @@
 package com.bencrow11.multieconomy.command.subcommand;
 
+import com.bencrow11.multieconomy.account.AccountManager;
 import com.bencrow11.multieconomy.config.ConfigManager;
 import com.bencrow11.multieconomy.currency.Currency;
 import com.bencrow11.multieconomy.permission.PermissionManager;
-import com.bencrow11.multieconomy.player.Player;
-import com.bencrow11.multieconomy.player.PlayerManager;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -51,12 +50,13 @@ public class AddBalanceCommand implements SubCommand {
 		}
 
 		String playerArg = StringArgumentType.getString(context, "player");
-		Player player = PlayerManager.getPlayerByName(playerArg);
 		String currencyArg = StringArgumentType.getString(context, "currency");
 		float amountArg = FloatArgumentType.getFloat(context, "amount");
 
 
-		if (player == null) {
+
+		// Check the player has an account.
+		if (!AccountManager.hasAccount(playerArg)) {
 			context.getSource().sendMessage(Text.literal("§cPlayer " + playerArg + " doesn't exist."));
 			return -1;
 		}
@@ -76,10 +76,22 @@ public class AddBalanceCommand implements SubCommand {
 			return -1;
 		}
 
-		System.out.println(playerArg.toString());
+		boolean success = AccountManager.getAccount(playerArg).add(currency, amountArg);
 
-		context.getSource().sendMessage(Text.literal("Success"));
+		System.out.println("Adding currency: " + success);
 
-		return 1;
+		if (success) {
+			if (amountArg == 1) {
+				context.getSource().sendMessage(Text.literal("§2Successfully added " +
+						amountArg + " " + currency.getSingular() + " to " + playerArg + "'s account."));
+			} else {
+				context.getSource().sendMessage(Text.literal("§2Successfully added " +
+						amountArg + " " + currency.getPlural() + " to " + playerArg + "'s account."));
+			}
+			return 1;
+		}
+
+		context.getSource().sendMessage(Text.literal("§cUnable to add currency to the account."));
+		return -1;
 	}
 }

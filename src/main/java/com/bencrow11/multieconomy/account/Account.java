@@ -1,10 +1,8 @@
 package com.bencrow11.multieconomy.account;
 
 import com.bencrow11.multieconomy.ErrorManager;
-import com.bencrow11.multieconomy.Multieconomy;
 import com.bencrow11.multieconomy.config.ConfigManager;
 import com.bencrow11.multieconomy.currency.Currency;
-import com.bencrow11.multieconomy.storage.StorageFormat;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,16 +12,19 @@ import java.util.UUID;
  * Account class that represents a single users account.
  * */
 public class Account {
-	private final UUID owner; // The UUID of the player who owns the account
+	private final UUID uuid; // The UUID of the player who owns the account
+	private String username;
 	private HashMap<Currency, Float> balances = new HashMap<>(); // The balances for each currency
 	private HashMap<String, Float> unavailableBalances = new HashMap<>(); // The balances that no longer exist
 
 	/**
 	 * Constructor for creating a new account. Used for new players.
-	 * @param owner the UUID of the owner of the account.
+	 * @param uuid the UUID of the owner of the account.
+	 * @param username the players username.
 	 */
-	public Account(UUID owner) {
-		this.owner = owner;
+	public Account(UUID uuid, String username) {
+		this.uuid = uuid;
+		this.username = username;
 
 		for (Currency currency : ConfigManager.getConfig().getCurrencies()) {
 			balances.put(currency, currency.getStartBalance());
@@ -34,8 +35,9 @@ public class Account {
 	 *  Constructor for moving storage info into memory.
 	 * @param account the StorageFormat of an account from storage.
 	 */
-	public Account(StorageFormat account) {
-		this.owner = UUID.fromString(account.getOwner());
+	public Account(AccountFile account) {
+		this.uuid = UUID.fromString(account.getUUID());
+		this.username = account.getUsername().toLowerCase();
 
 		HashMap<String, Float> storedBalances = account.getBalances();
 
@@ -58,7 +60,7 @@ public class Account {
 			if (!found) {
 				unavailableBalances.put(currencyName, storedBalances.get(currencyName));
 				ErrorManager.addError("Currency " + currencyName + " was not found in the config for UUID " +
-						account.getOwner() + ".");
+						account.getUUID() + ".");
 			}
 		}
 
@@ -80,12 +82,18 @@ public class Account {
 	}
 
 	/**
-	 * Getter for owner field.
+	 * Getter for uuid field.
 	 * @return Account owners UUID
 	 */
-	public UUID getOwner() {
-		return owner;
+	public UUID getUUID() {
+		return uuid;
 	}
+
+	/**
+	 * Getter for the username field.
+	 * @return Account owners username.
+	 */
+	public String getUsername() {return username; }
 
 	/**
 	 * Getter for the owners balances.
@@ -93,6 +101,14 @@ public class Account {
 	 */
 	public HashMap<Currency, Float> getBalances() {
 		return balances;
+	}
+
+	/**
+	 * Setter to change the players username.
+	 * @param username String of the players new username.
+	 */
+	public void changeUsername(String username) {
+		this.username = username;
 	}
 
 	/**
@@ -110,6 +126,15 @@ public class Account {
 	 */
 	public float getBalance(Currency currency) {
 		return balances.get(currency);
+	}
+
+	/**
+	 * Getter for the balance of a single unavailable currency.
+	 * @param currency the name of the currency.
+	 * @return the balance of the currency.
+	 */
+	public float getUnusedBalance(String currency) {
+		return unavailableBalances.get(currency);
 	}
 
 	/**
@@ -162,7 +187,7 @@ public class Account {
 
 	@Override
 	public String toString() {
-		String base = this.getOwner().toString() + ": \n";
+		String base = this.getUUID().toString() + ": \n";
 
 		for (Currency currency : getBalances().keySet()) {
 			base = base + "Currency:\n" + currency.getName() + getBalance(currency) + "\n";

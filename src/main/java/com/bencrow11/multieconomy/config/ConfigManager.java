@@ -1,12 +1,8 @@
 package com.bencrow11.multieconomy.config;
 
 import com.bencrow11.multieconomy.ErrorManager;
-import com.bencrow11.multieconomy.currency.Currency;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import java.io.*;
-import java.util.ArrayList;
+import com.bencrow11.multieconomy.Multieconomy;
+import com.bencrow11.multieconomy.util.Utils;
 
 /**
  * Manager class to load, write and store the config.
@@ -17,100 +13,33 @@ public abstract class ConfigManager {
 
 	/**
 	 * Method to load the config and store it into the multiEcoConfig field.
-	 * @return true if the config loaded correctly.
 	 */
-	public static boolean loadConfig() {
+	public static void loadConfig() {
 
-		String root = new File("").getAbsolutePath();
-		String path = root + "/config/MultiEconomy";
+		Config cfg = null;
 
-		try {
-			File dir = new File(path);
-			if (!dir.exists()) {
-				dir.mkdirs();
+		cfg = Utils.readFromFile("", "config", Config.class);
+
+		if (cfg == null) {
+			Multieconomy.LOGGER.info("Couldn't find config for MultiEconomy, creating new config.");
+			boolean success = Utils.writeToFile("", "config", new Config());
+
+			if (!success) {
+				ErrorManager.addError("Failed to create config. Please check the console for any errors.");
+				return;
 			}
 
-			String[] list = dir.list((dir1, name) -> name.equalsIgnoreCase("config.json"));
+			cfg = Utils.readFromFile("", "config", Config.class);
+		}
 
-			File file = new File(dir, "config.json");
-			Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-			if (list.length == 0) {
-				createConfigFile(path);
+			boolean hasPassed = Utils.checkConfig(cfg);
+
+			if (!hasPassed) {
+				ErrorManager.addError("Config is invalid. Please regenerate or fix the errors.");
 			}
 
-			Reader reader = new FileReader(file);
-			ConfigManager.multiEcoConfig = gson.fromJson(reader, Config.class);
-			reader.close();
-
-			checkConfig();
-
-			return true;
-
-		} catch (Exception e) {
-			ErrorManager.addError("MultiEconomy config could not be loaded properly. Please check the config or " +
-					"generate a new one.");
-			e.printStackTrace();
-			return false;
-		}
-	}
-
-	/**
-	 * Method to create a new config file.
-	 * @param path the filepath that should be used.
-	 */
-	public static void createConfigFile(String path){
-		File dir = new File(path);
-		File file = new File(dir, "config.json");
-
-		try {
-			file.createNewFile();
-			Writer writer = new FileWriter(file, false);
-
-			ArrayList<Currency> defaultCurrencies = new ArrayList<>();
-			defaultCurrencies.add(new Currency("dollars", "dollar", "dollars", 100, true));
-
-			Config defaultConfig = new Config(true, "dollars", defaultCurrencies);
-
-			Gson gson = new GsonBuilder().setPrettyPrinting().create();
-			gson.toJson(defaultConfig, writer);
-			writer.flush();
-			writer.close();
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Method to check the config is valid.
-	 * @return true if the config is valid.
-	 */
-	public static boolean checkConfig(){
-		ArrayList<Currency> currencies = ConfigManager.multiEcoConfig.getCurrencies();
-		String defaultCurrency = ConfigManager.multiEcoConfig.getDefaultCurrency().trim().toLowerCase();
-
-		for (int i = 0; i < currencies.toArray().length; i++) {
-			String currentCurrency = currencies.get(i).getName();
-
-			for (int x = i + 1; x < currencies.toArray().length; x++) {
-				String comparedCurrency = currencies.get(x).getName();
-				if (currentCurrency.equals(comparedCurrency)) {
-					ErrorManager.addError("Found duplicate currency with name: " + currentCurrency);
-					return false;
-				}
-			}
-		}
-
-		for (Currency currency : currencies) {
-			String currencyFormatted = currency.getName().trim().toLowerCase();
-			if (currencyFormatted.equals(defaultCurrency)) {
-				return true;
-			}
-		}
-		ErrorManager.addError("Multicurrency default currency " + ConfigManager.multiEcoConfig.getDefaultCurrency() +
-				" doesn't match any existing currency name.");
-
-		return false;
+			multiEcoConfig = cfg;
 	}
 
 	public static Config getConfig() {

@@ -15,17 +15,18 @@ public class Config {
 	// All the currencies available.
 	private final ArrayList<Currency> currencies;
 
+
 	/**
-	 * Constructor the create a new config.
-	 * @param allowOfflinePayments sets the field allowOfflinePayments.
-	 * @param defaultCurrency sets the field defaultCurrency.
-	 * @param currencies sets the field currencies.
+	 * Constructor the create a new config with default values.
 	 */
-	public Config(boolean allowOfflinePayments, String defaultCurrency,
-	              ArrayList<Currency> currencies) {
-		this.allowOfflinePayments = allowOfflinePayments;
-		this.defaultCurrency = defaultCurrency;
-		this.currencies = currencies;
+	public Config() {
+		this.allowOfflinePayments = true;
+		this.defaultCurrency = "dollar";
+
+		ArrayList<Currency> defaultCurrencies = new ArrayList<>();
+		defaultCurrencies.add(new Currency("dollar", "dollar", "dollars", 100, true));
+
+		this.currencies = defaultCurrencies;
 	}
 
 	/**

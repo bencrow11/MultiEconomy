@@ -82,11 +82,11 @@ public class AddBalanceCommand implements SubCommand {
 
 		if (success) {
 			if (amountArg == 1) {
-				context.getSource().sendMessage(Text.literal("§2Successfully added " +
-						amountArg + " " + currency.getSingular() + " to " + playerArg + "'s account."));
+				context.getSource().sendMessage(Text.literal("§2Successfully added §b" +
+						amountArg + " " + currency.getSingular() + "§2 to §b" + playerArg + "§2's account."));
 			} else {
-				context.getSource().sendMessage(Text.literal("§2Successfully added " +
-						amountArg + " " + currency.getPlural() + " to " + playerArg + "'s account."));
+				context.getSource().sendMessage(Text.literal("§2Successfully added §b" +
+						amountArg + " " + currency.getPlural() + "§2 to §b" + playerArg + "§2's account."));
 			}
 			return 1;
 		}

@@ -3,7 +3,6 @@ package com.bencrow11.multieconomy.util;
 import com.bencrow11.multieconomy.ErrorManager;
 import com.bencrow11.multieconomy.Multieconomy;
 import com.bencrow11.multieconomy.config.Config;
-import com.bencrow11.multieconomy.config.ConfigManager;
 import com.bencrow11.multieconomy.currency.Currency;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -153,6 +152,14 @@ public class Utils {
 	                                   LiteralCommandNode<ServerCommandSource> command) {
 		for (String alias : Multieconomy.ALIASES) {
 			dispatcher.register(CommandManager.literal(alias).redirect(command));
+		}
+	}
+
+	public static String formatMessage(String message, Boolean isPlayer) {
+		if (isPlayer) {
+			return message.trim();
+		} else {
+			return message.replaceAll("§[0-9a-fk-or]", "").trim();
 		}
 	}
 }

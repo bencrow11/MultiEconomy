@@ -1,11 +1,10 @@
 package com.bencrow11.multieconomy.command;
 
 import com.bencrow11.multieconomy.Multieconomy;
-import com.bencrow11.multieconomy.command.subcommand.AddBalanceCommand;
+import com.bencrow11.multieconomy.command.subcommand.*;
 import com.bencrow11.multieconomy.util.Utils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.server.command.CommandManager;
@@ -22,15 +21,20 @@ public abstract class BaseCommand {
 				.executes(BaseCommand::run)
 				.build();
 
-				dispatcher.getRoot().addChild(root);
+		dispatcher.getRoot().addChild(root);
 
-				Utils.registerAliases(dispatcher, root);
+		Utils.registerAliases(dispatcher, root);
 
-				root.addChild(new AddBalanceCommand().build());
+		root.addChild(new AddBalanceCommand().build());
+		root.addChild(new RemoveBalanceCommand().build());
+		root.addChild(new SetBalanceCommand().build());
+		root.addChild(new ClearBalanceCommand().build());
+		root.addChild(new HelpCommand().build());
 	}
 
-	public static int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-		context.getSource().getPlayer().sendMessage(Text.literal("Base Command!"));
+	public static int run(CommandContext<ServerCommandSource> context) {
+		context.getSource().sendMessage(Text.literal("§aRunning §bMultiEconomy §b" + Multieconomy.VERSION +
+				"§a."));
 		return 1;
 	}
 }

@@ -16,11 +16,11 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
-public class AddBalanceCommand implements SubCommandInterface {
+public class RemoveBalanceCommand implements SubCommandInterface {
 
 	@Override
 	public LiteralCommandNode<ServerCommandSource> build() {
-		return CommandManager.literal("add")
+		return CommandManager.literal("remove")
 				.executes(this::showUsage)
 				.then(CommandManager.argument("player", StringArgumentType.string())
 						.suggests((ctx, builder) -> {
@@ -46,9 +46,9 @@ public class AddBalanceCommand implements SubCommandInterface {
 		ServerPlayerEntity playerSource = context.getSource().getPlayer();
 
 		if (isPlayer) {
-			if (!PermissionManager.hasPermission(playerSource.getUuid(), PermissionManager.ADD_BALANCE_PERMISSION)) {
+			if (!PermissionManager.hasPermission(playerSource.getUuid(), PermissionManager.REMOVE_BALANCE_PERMISSION)) {
 				context.getSource().sendMessage(Text.literal("§cYou need the permission §b" +
-						PermissionManager.ADD_BALANCE_PERMISSION +
+						PermissionManager.REMOVE_BALANCE_PERMISSION +
 						"§c to run this command."));
 				return -1;
 			}
@@ -57,6 +57,8 @@ public class AddBalanceCommand implements SubCommandInterface {
 		String playerArg = StringArgumentType.getString(context, "player");
 		String currencyArg = StringArgumentType.getString(context, "currency");
 		float amountArg = FloatArgumentType.getFloat(context, "amount");
+
+
 
 		// Check the player has an account.
 		if (!AccountManager.hasAccount(playerArg)) {
@@ -80,32 +82,38 @@ public class AddBalanceCommand implements SubCommandInterface {
 			return -1;
 		}
 
-		boolean success = AccountManager.getAccount(playerArg).add(currency, amountArg);
+		if (AccountManager.getAccount(playerArg).getBalance(currency) < amountArg) {
+			context.getSource().sendMessage(Text.literal(Utils.formatMessage("§cThis user doesn't have enough §b"  + currency.getPlural() +
+					"§c to remove§b " +  amountArg + " §cfrom their account.", isPlayer)));
+			return -1;
+		}
+
+		boolean success = AccountManager.getAccount(playerArg).remove(currency, amountArg);
 
 		if (success) {
 			if (amountArg == 1) {
-				context.getSource().sendMessage(Text.literal(Utils.formatMessage("§aSuccessfully added §b" +
-						amountArg + " " + currency.getSingular() + "§a to §b" + playerArg + "§a's account.", isPlayer)));
+				context.getSource().sendMessage(Text.literal(Utils.formatMessage("§aSuccessfully removed §b" +
+						amountArg + " " + currency.getSingular() + "§a from §b" + playerArg + "§a's account.", isPlayer)));
 			} else {
-				context.getSource().sendMessage(Text.literal(Utils.formatMessage("§aSuccessfully added §b" +
-						amountArg + " " + currency.getPlural() + "§a to §b" + playerArg + "§a's account.", isPlayer)));
+				context.getSource().sendMessage(Text.literal(Utils.formatMessage("§aSuccessfully removed §b" +
+						amountArg + " " + currency.getPlural() + "§a from §b" + playerArg + "§a's account.", isPlayer)));
 			}
 			return 1;
 		}
 
-		context.getSource().sendMessage(Text.literal(Utils.formatMessage("§cUnable to add currency to the account.",
-				isPlayer)));
+		context.getSource().sendMessage(Text.literal(Utils.formatMessage("§cUnable to remove currency from the " +
+				"account.", isPlayer)));
 		return -1;
 	}
 
 	public int showUsage(CommandContext<ServerCommandSource> context) {
 
-		String usage = "§9§lMultiEconomy Command Usage - §r§3add\n" +
-				"§3> Adds money to a currency on a players account\n" +
+		String usage = "§9§lMultiEconomy Command Usage - §r§3remove\n" +
+				"§3> Removes money from a currency on a players account\n" +
 				"§9Arguments:\n" +
-				"§3- §8<§7player§8> §3-> §7the player to add the money to\n" +
-				"§3- §8<§7currency§8> §3-> §7the currency to add the amount to\n" +
-				"§3- §8<§7amount§8> §3-> §7the amount to add to the account\n";
+				"§3- §8<§7player§8> §3-> §7the player to remove the money from\n" +
+				"§3- §8<§7currency§8> §3-> §7the currency to remove the amount from\n" +
+				"§3- §8<§7amount§8> §3-> §7the amount to remove from the account\n";
 
 		context.getSource().sendMessage(Text.literal(Utils.formatMessage(usage, context.getSource().isExecutedByPlayer())));
 		return 1;

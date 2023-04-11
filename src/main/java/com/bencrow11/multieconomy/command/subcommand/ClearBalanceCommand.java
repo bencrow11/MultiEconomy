@@ -6,7 +6,6 @@ import com.bencrow11.multieconomy.config.ConfigManager;
 import com.bencrow11.multieconomy.currency.Currency;
 import com.bencrow11.multieconomy.permission.PermissionManager;
 import com.bencrow11.multieconomy.util.Utils;
-import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -16,11 +15,11 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
-public class AddBalanceCommand implements SubCommandInterface {
+public class ClearBalanceCommand implements SubCommandInterface {
 
 	@Override
 	public LiteralCommandNode<ServerCommandSource> build() {
-		return CommandManager.literal("add")
+		return CommandManager.literal("clear")
 				.executes(this::showUsage)
 				.then(CommandManager.argument("player", StringArgumentType.string())
 						.suggests((ctx, builder) -> {
@@ -33,10 +32,7 @@ public class AddBalanceCommand implements SubCommandInterface {
 									CommandSource.suggestMatching(ConfigManager.getConfig().getCurrenciesAsString()
 											, builder);
 									return builder.buildFuture();
-								})
-								.executes(this::showUsage)
-								.then(CommandManager.argument("amount", FloatArgumentType.floatArg())
-										.executes(this::run))))
+								}).executes(this::run)))
 				.build();
 	}
 
@@ -46,9 +42,9 @@ public class AddBalanceCommand implements SubCommandInterface {
 		ServerPlayerEntity playerSource = context.getSource().getPlayer();
 
 		if (isPlayer) {
-			if (!PermissionManager.hasPermission(playerSource.getUuid(), PermissionManager.ADD_BALANCE_PERMISSION)) {
+			if (!PermissionManager.hasPermission(playerSource.getUuid(), PermissionManager.CLEAR_BALANCE_PERMISSION)) {
 				context.getSource().sendMessage(Text.literal("§cYou need the permission §b" +
-						PermissionManager.ADD_BALANCE_PERMISSION +
+						PermissionManager.CLEAR_BALANCE_PERMISSION +
 						"§c to run this command."));
 				return -1;
 			}
@@ -56,7 +52,6 @@ public class AddBalanceCommand implements SubCommandInterface {
 
 		String playerArg = StringArgumentType.getString(context, "player");
 		String currencyArg = StringArgumentType.getString(context, "currency");
-		float amountArg = FloatArgumentType.getFloat(context, "amount");
 
 		// Check the player has an account.
 		if (!AccountManager.hasAccount(playerArg)) {
@@ -74,38 +69,26 @@ public class AddBalanceCommand implements SubCommandInterface {
 			return -1;
 		}
 
-		// Checks for valid amount.
-		if (amountArg <= 0) {
-			context.getSource().sendMessage(Text.literal(Utils.formatMessage("§cAmount must be greater than 0.", isPlayer)));
-			return -1;
-		}
-
-		boolean success = AccountManager.getAccount(playerArg).add(currency, amountArg);
+		boolean success = AccountManager.getAccount(playerArg).set(currency, 0);
 
 		if (success) {
-			if (amountArg == 1) {
-				context.getSource().sendMessage(Text.literal(Utils.formatMessage("§aSuccessfully added §b" +
-						amountArg + " " + currency.getSingular() + "§a to §b" + playerArg + "§a's account.", isPlayer)));
-			} else {
-				context.getSource().sendMessage(Text.literal(Utils.formatMessage("§aSuccessfully added §b" +
-						amountArg + " " + currency.getPlural() + "§a to §b" + playerArg + "§a's account.", isPlayer)));
-			}
+			context.getSource().sendMessage(Text.literal(Utils.formatMessage("§aSuccessfully cleared §b" +
+					playerArg + "§a's balance for §b" + currency.getName() + "§a.", isPlayer)));
 			return 1;
 		}
 
-		context.getSource().sendMessage(Text.literal(Utils.formatMessage("§cUnable to add currency to the account.",
+		context.getSource().sendMessage(Text.literal(Utils.formatMessage("§cUnable to clear the accounts balance.",
 				isPlayer)));
 		return -1;
 	}
 
 	public int showUsage(CommandContext<ServerCommandSource> context) {
 
-		String usage = "§9§lMultiEconomy Command Usage - §r§3add\n" +
-				"§3> Adds money to a currency on a players account\n" +
+		String usage = "§9§lMultiEconomy Command Usage - §r§3clear\n" +
+				"§3> Clears money of a currency on a players account\n" +
 				"§9Arguments:\n" +
-				"§3- §8<§7player§8> §3-> §7the player to add the money to\n" +
-				"§3- §8<§7currency§8> §3-> §7the currency to add the amount to\n" +
-				"§3- §8<§7amount§8> §3-> §7the amount to add to the account\n";
+				"§3- §8<§7player§8> §3-> §7the player to set the money to\n" +
+				"§3- §8<§7currency§8> §3-> §7the currency to set the amount to\n";
 
 		context.getSource().sendMessage(Text.literal(Utils.formatMessage(usage, context.getSource().isExecutedByPlayer())));
 		return 1;

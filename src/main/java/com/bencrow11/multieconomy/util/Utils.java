@@ -12,11 +12,95 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousFileChannel;
+import java.nio.channels.CompletionHandler;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 public class Utils {
 
 	private static final String BASE_PATH = new File("").getAbsolutePath() + "/config/MultiEconomy/";
+
+	/**
+	 * Method to write some data to file.
+	 * @param filePath the directory to write the file to
+	 * @param filename the name of the file
+	 * @param data the data to write to file
+	 * @return true if writing to file was successful
+	 */
+	public static boolean writeFileAsync(String filePath, String filename, String data) {
+		try {
+			Path path = Paths.get(BASE_PATH + filePath + filename);
+
+			if (!Files.exists(Paths.get(BASE_PATH + filePath))) {
+				Files.createDirectory(Path.of(BASE_PATH + filePath));
+			}
+
+			AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE, StandardOpenOption.CREATE);
+			ByteBuffer buffer = ByteBuffer.allocate(1024);
+			buffer.put(data.getBytes());
+			buffer.flip();
+
+			fileChannel.write(buffer, 0, buffer, new CompletionHandler<Integer, ByteBuffer>() {
+				@Override
+				public void completed(Integer result, ByteBuffer attachment) {
+					attachment.clear();
+				}
+
+				@Override
+				public void failed(Throwable exc, ByteBuffer attachment) {
+					exc.printStackTrace();
+				}
+			});
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	/**
+	 * Method to read a file asynchronously
+	 * @param filePath the path of the directory to find the file at
+	 * @param filename the name of the file
+	 * @param callback a callback to deal with the data read
+	 * @return
+	 */
+	public static boolean readFileAsync(String filePath, String filename, Consumer<String> callback) {
+		try {
+			Path path = Paths.get(BASE_PATH + filePath + filename);
+
+			if (!Files.exists(Paths.get(BASE_PATH + filePath))) {
+				return false;
+			}
+
+			AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.READ);
+			ByteBuffer buffer = ByteBuffer.allocate(1024);
+
+			fileChannel.read(buffer, 0, buffer, new CompletionHandler<Integer, ByteBuffer>() {
+				@Override
+				public void completed(Integer result, ByteBuffer attachment) {
+					attachment.flip();
+					byte[] data = new byte[attachment.limit()];
+					attachment.get(data);
+					callback.accept(new String(data));
+					attachment.clear();
+				}
+
+				@Override
+				public void failed(Throwable exc, ByteBuffer attachment) {
+					exc.printStackTrace();
+				}
+			});
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
 
 	public static <T> T readFromFile(String subpath, String filename, Class<T> dataType) {
 		try {

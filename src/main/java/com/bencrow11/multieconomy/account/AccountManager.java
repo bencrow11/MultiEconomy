@@ -95,7 +95,11 @@ public abstract class AccountManager {
 	 * Method to initialise the AccountManager when the server starts.
 	 */
 	public static void initialise() {
+		long start = System.currentTimeMillis();
 		ArrayList<AccountFile> accountFiles = Utils.getAllFiles("accounts", AccountFile.class);
+		long end = System.currentTimeMillis();
+		System.out.println("Initialization took " + (end - start) + " milliseconds.");
+
 
 		if (accountFiles == null) {
 			return;

@@ -121,20 +121,4 @@ public abstract class AccountManager {
 			return;
 		}
 	}
-
-
-	public static String accountSummary() {
-		String baseString = "MultiCurrency Accounts:\n";
-
-		for (String key : accounts.keySet()) {
-			baseString += key + "'s Accounts:";
-			for (Currency currency : accounts.get(key).getBalances().keySet()) {
-				baseString += currency.getName() + ": " + accounts.get(key).getBalance(currency) + "\n";
-			}
-			for (String oldCurrency : accounts.get(key).getUnavailableBalances().keySet()) {
-				baseString += oldCurrency + ": " + accounts.get(key).getUnusedBalance(oldCurrency) + "\n";
-			}
-		}
-		return baseString.trim();
-	}
 }

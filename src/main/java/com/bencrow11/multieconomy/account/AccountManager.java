@@ -2,11 +2,15 @@ package com.bencrow11.multieconomy.account;
 
 import com.bencrow11.multieconomy.ErrorManager;
 import com.bencrow11.multieconomy.Multieconomy;
+import com.bencrow11.multieconomy.currency.Currency;
 import com.bencrow11.multieconomy.util.Utils;
+import com.google.gson.Gson;
 
-import java.util.ArrayList;
+import java.io.File;
 import java.util.HashMap;
 import java.util.UUID;
+
+import static com.bencrow11.multieconomy.util.Utils.readFileAsync;
 
 /**
  * AccountManager class to store the accounts of all players.
@@ -61,8 +65,9 @@ public abstract class AccountManager {
 	public static boolean updateAccount(Account account) {
 		accounts.remove(account.getUsername().toLowerCase());
 		accounts.put(account.getUsername().toLowerCase(), account);
-		boolean success = Utils.writeToFile("accounts", account.getUUID().toString(), new AccountFile(account));
-
+		Gson gson = Utils.newGson();
+		boolean success = Utils.writeFileAsync("accounts/", account.getUUID().toString() + ".json",
+				 gson.toJson(new AccountFile(account)));
 		if (!success) {
 			ErrorManager.addError("Failed to write account to storage for account: " + account.getUsername());
 			Multieconomy.LOGGER.error("Failed to write account to storage for account: " + account.getUsername());
@@ -80,9 +85,9 @@ public abstract class AccountManager {
 	 */
 	public static boolean createAccount(UUID uuid, String username) {
 		accounts.put(username.toLowerCase(), new Account(uuid, username));
-		boolean success = Utils.writeToFile("accounts", accounts.get(username.toLowerCase()).getUUID().toString(),
-				new AccountFile(accounts.get(username.toLowerCase())));
-
+		Gson gson = Utils.newGson();
+		boolean success = Utils.writeFileAsync("accounts/", accounts.get(username.toLowerCase()).getUUID().toString() + ".json",
+				gson.toJson(new AccountFile(accounts.get(username.toLowerCase()))));
 		if (!success) {
 			ErrorManager.addError("Failed to write account to storage for account: " + username);
 			Multieconomy.LOGGER.error("Failed to write account to storage for account: " + username);
@@ -95,19 +100,41 @@ public abstract class AccountManager {
 	 * Method to initialise the AccountManager when the server starts.
 	 */
 	public static void initialise() {
-		long start = System.currentTimeMillis();
-		ArrayList<AccountFile> accountFiles = Utils.getAllFiles("accounts", AccountFile.class);
-		long end = System.currentTimeMillis();
-		System.out.println("Initialization took " + (end - start) + " milliseconds.");
+		try {
+			File dir = Utils.checkForDirectory(Utils.BASE_PATH + "accounts/");
 
+			String[] list = dir.list();
 
-		if (accountFiles == null) {
+			if (list.length == 0) {
+				return;
+			}
+
+			for (String file : list) {
+				readFileAsync("accounts/", file, (el -> {
+					Gson gson = Utils.newGson();
+					AccountFile accountFile = gson.fromJson(el, AccountFile.class);
+					accounts.put(accountFile.getUsername().toLowerCase(), new Account(accountFile));
+				}));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 			return;
 		}
+	}
 
-		for (AccountFile file : accountFiles) {
-			Account convertedAccount = new Account(file);
-			accounts.put(convertedAccount.getUsername().toLowerCase(), convertedAccount);
+
+	public static String accountSummary() {
+		String baseString = "MultiCurrency Accounts:\n";
+
+		for (String key : accounts.keySet()) {
+			baseString += key + "'s Accounts:";
+			for (Currency currency : accounts.get(key).getBalances().keySet()) {
+				baseString += currency.getName() + ": " + accounts.get(key).getBalance(currency) + "\n";
+			}
+			for (String oldCurrency : accounts.get(key).getUnavailableBalances().keySet()) {
+				baseString += oldCurrency + ": " + accounts.get(key).getUnusedBalance(oldCurrency) + "\n";
+			}
 		}
+		return baseString.trim();
 	}
 }

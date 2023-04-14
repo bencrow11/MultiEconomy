@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 
 public class Utils {
 
-	private static final String BASE_PATH = new File("").getAbsolutePath() + "/config/MultiEconomy/";
+	public static final String BASE_PATH = new File("").getAbsolutePath() + "/config/MultiEconomy/";
 
 	/**
 	 * Method to write some data to file.
@@ -68,18 +68,25 @@ public class Utils {
 	 * @param filePath the path of the directory to find the file at
 	 * @param filename the name of the file
 	 * @param callback a callback to deal with the data read
-	 * @return
+	 * @return true if the file was read successfully
 	 */
 	public static boolean readFileAsync(String filePath, String filename, Consumer<String> callback) {
 		try {
+			System.out.println(BASE_PATH + filePath + filename);
 			Path path = Paths.get(BASE_PATH + filePath + filename);
+
+			System.out.println("system got here.");
 
 			if (!Files.exists(Paths.get(BASE_PATH + filePath))) {
 				return false;
 			}
 
+			System.out.println("system got here too.");
+
 			AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.READ);
 			ByteBuffer buffer = ByteBuffer.allocate(1024);
+
+			System.out.println("system also got here.");
 
 			fileChannel.read(buffer, 0, buffer, new CompletionHandler<Integer, ByteBuffer>() {
 				@Override
@@ -128,37 +135,6 @@ public class Utils {
 		}
 	}
 
-	public static <T> ArrayList<T> getAllFiles(String subpath, Class<T> dataType) {
-		try {
-			File dir = checkForDirectory(BASE_PATH + subpath);
-
-			String[] list = dir.list();
-
-			if (list.length == 0) {
-				return null;
-			}
-
-			ArrayList<T> files = new ArrayList<>();
-
-			for (String item : list) {
-				File file = new File(dir, item);
-				Gson gson = newGson();
-
-				Reader reader = new FileReader(file);
-
-				T data = gson.fromJson(reader, dataType);
-				reader.close();
-
-				files.add(data);
-			}
-
-			return files;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
 	public static boolean writeToFile(String subpath, String filename, Object data) {
 		try {
 			File dir = checkForDirectory(BASE_PATH + subpath);
@@ -184,7 +160,7 @@ public class Utils {
 		}
 	}
 
-	private static File checkForDirectory(String path) {
+	public static File checkForDirectory(String path) {
 		File dir = new File(path);
 		if (!dir.exists()) {
 			dir.mkdirs();
@@ -196,7 +172,7 @@ public class Utils {
 		return dir.list((dir1, name) -> name.equals(filename));
 	}
 
-	private static Gson newGson() {
+	public static Gson newGson() {
 		return new GsonBuilder().setPrettyPrinting().create();
 	}
 

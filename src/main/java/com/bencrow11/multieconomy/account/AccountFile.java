@@ -23,7 +23,6 @@ public class AccountFile {
 		for (String unusedCurrency : account.getUnavailableBalances().keySet()) {
 			this.balances.put(unusedCurrency, account.getUnusedBalance(unusedCurrency));
 		}
-
 	}
 
 	/**

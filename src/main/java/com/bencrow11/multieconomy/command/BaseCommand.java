@@ -1,7 +1,7 @@
 package com.bencrow11.multieconomy.command;
 
 import com.bencrow11.multieconomy.Multieconomy;
-import com.bencrow11.multieconomy.command.subcommand.*;
+import com.bencrow11.multieconomy.command.commands.*;
 import com.bencrow11.multieconomy.util.Utils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;

@@ -2,7 +2,6 @@ package com.bencrow11.multieconomy.account;
 
 import com.bencrow11.multieconomy.ErrorManager;
 import com.bencrow11.multieconomy.Multieconomy;
-import com.bencrow11.multieconomy.currency.Currency;
 import com.bencrow11.multieconomy.util.Utils;
 import com.google.gson.Gson;
 
@@ -63,12 +62,15 @@ public abstract class AccountManager {
 	 * @return true if the account was successfully updated.
 	 */
 	public static boolean updateAccount(Account account) {
+		Account oldAccount = accounts.get(account.getUsername().toLowerCase());
 		accounts.remove(account.getUsername().toLowerCase());
 		accounts.put(account.getUsername().toLowerCase(), account);
 		Gson gson = Utils.newGson();
 		boolean success = Utils.writeFileAsync("accounts/", account.getUUID().toString() + ".json",
 				 gson.toJson(new AccountFile(account)));
 		if (!success) {
+			accounts.remove(account.getUsername().toLowerCase());
+			accounts.put(account.getUsername().toLowerCase(), oldAccount);
 			ErrorManager.addError("Failed to write account to storage for account: " + account.getUsername());
 			Multieconomy.LOGGER.error("Failed to write account to storage for account: " + account.getUsername());
 			return false;

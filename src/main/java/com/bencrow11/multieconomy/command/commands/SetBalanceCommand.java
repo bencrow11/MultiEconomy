@@ -1,4 +1,4 @@
-package com.bencrow11.multieconomy.command.subcommand;
+package com.bencrow11.multieconomy.command.commands;
 
 import com.bencrow11.multieconomy.account.AccountManager;
 import com.bencrow11.multieconomy.command.SubCommandInterface;
@@ -16,11 +16,11 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
-public class RemoveBalanceCommand implements SubCommandInterface {
+public class SetBalanceCommand implements SubCommandInterface {
 
 	@Override
 	public LiteralCommandNode<ServerCommandSource> build() {
-		return CommandManager.literal("remove")
+		return CommandManager.literal("set")
 				.executes(this::showUsage)
 				.then(CommandManager.argument("player", StringArgumentType.string())
 						.suggests((ctx, builder) -> {
@@ -46,9 +46,9 @@ public class RemoveBalanceCommand implements SubCommandInterface {
 		ServerPlayerEntity playerSource = context.getSource().getPlayer();
 
 		if (isPlayer) {
-			if (!PermissionManager.hasPermission(playerSource.getUuid(), PermissionManager.REMOVE_BALANCE_PERMISSION)) {
+			if (!PermissionManager.hasPermission(playerSource.getUuid(), PermissionManager.SET_BALANCE_PERMISSION)) {
 				context.getSource().sendMessage(Text.literal("§cYou need the permission §b" +
-						PermissionManager.REMOVE_BALANCE_PERMISSION +
+						PermissionManager.SET_BALANCE_PERMISSION +
 						"§c to run this command."));
 				return -1;
 			}
@@ -82,38 +82,31 @@ public class RemoveBalanceCommand implements SubCommandInterface {
 			return -1;
 		}
 
-		if (AccountManager.getAccount(playerArg).getBalance(currency) < amountArg) {
-			context.getSource().sendMessage(Text.literal(Utils.formatMessage("§cThis user doesn't have enough §b"  + currency.getPlural() +
-					"§c to remove§b " +  amountArg + " §cfrom their account.", isPlayer)));
-			return -1;
-		}
-
-		boolean success = AccountManager.getAccount(playerArg).remove(currency, amountArg);
+		boolean success = AccountManager.getAccount(playerArg).set(currency, amountArg);
 
 		if (success) {
 			if (amountArg == 1) {
-				context.getSource().sendMessage(Text.literal(Utils.formatMessage("§aSuccessfully removed §b" +
-						amountArg + " " + currency.getSingular() + "§a from §b" + playerArg + "§a's account.", isPlayer)));
+				context.getSource().sendMessage(Text.literal(Utils.formatMessage("§aSuccessfully set §b" +
+						playerArg + "§a's account to §b" + amountArg + " " + currency.getSingular() + "§a.", isPlayer)));
 			} else {
-				context.getSource().sendMessage(Text.literal(Utils.formatMessage("§aSuccessfully removed §b" +
-						amountArg + " " + currency.getPlural() + "§a from §b" + playerArg + "§a's account.", isPlayer)));
+				context.getSource().sendMessage(Text.literal(Utils.formatMessage("§aSuccessfully set §b" +
+						playerArg + "§a's account to §b" + amountArg + " " + currency.getPlural() + "§a.", isPlayer)));
 			}
 			return 1;
 		}
 
-		context.getSource().sendMessage(Text.literal(Utils.formatMessage("§cUnable to remove currency from the " +
-				"account.", isPlayer)));
+		context.getSource().sendMessage(Text.literal(Utils.formatMessage("§cUnable to set the accounts balance.", isPlayer)));
 		return -1;
 	}
 
 	public int showUsage(CommandContext<ServerCommandSource> context) {
 
-		String usage = "§9§lMultiEconomy Command Usage - §r§3remove\n" +
-				"§3> Removes money from a currency on a players account\n" +
+		String usage = "§9§lMultiEconomy Command Usage - §r§3set\n" +
+				"§3> Sets the amount of a currency on a players account\n" +
 				"§9Arguments:\n" +
-				"§3- §8<§7player§8> §3-> §7the player to remove the money from\n" +
-				"§3- §8<§7currency§8> §3-> §7the currency to remove the amount from\n" +
-				"§3- §8<§7amount§8> §3-> §7the amount to remove from the account\n";
+				"§3- §8<§7player§8> §3-> §7the player to set the money on\n" +
+				"§3- §8<§7currency§8> §3-> §7the currency to set the amount to\n" +
+				"§3- §8<§7amount§8> §3-> §7the amount to set on the account\n";
 
 		context.getSource().sendMessage(Text.literal(Utils.formatMessage(usage, context.getSource().isExecutedByPlayer())));
 		return 1;

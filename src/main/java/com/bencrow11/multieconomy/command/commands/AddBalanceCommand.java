@@ -1,4 +1,4 @@
-package com.bencrow11.multieconomy.command.subcommand;
+package com.bencrow11.multieconomy.command.commands;
 
 import com.bencrow11.multieconomy.account.AccountManager;
 import com.bencrow11.multieconomy.command.SubCommandInterface;

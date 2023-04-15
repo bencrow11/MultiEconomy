@@ -72,21 +72,14 @@ public class Utils {
 	 */
 	public static boolean readFileAsync(String filePath, String filename, Consumer<String> callback) {
 		try {
-			System.out.println(BASE_PATH + filePath + filename);
 			Path path = Paths.get(BASE_PATH + filePath + filename);
-
-			System.out.println("system got here.");
 
 			if (!Files.exists(Paths.get(BASE_PATH + filePath))) {
 				return false;
 			}
 
-			System.out.println("system got here too.");
-
 			AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.READ);
 			ByteBuffer buffer = ByteBuffer.allocate(1024);
-
-			System.out.println("system also got here.");
 
 			fileChannel.read(buffer, 0, buffer, new CompletionHandler<Integer, ByteBuffer>() {
 				@Override

@@ -24,7 +24,12 @@ public abstract class AccountManager {
 	 * @return true if the player has an account.
 	 */
 	public static boolean hasAccount(String username) {
-		return accounts.containsKey(username.toLowerCase());
+		for (String name : accounts.keySet()) {
+			if (name.equalsIgnoreCase(username)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static boolean hasAccount(UUID uuid) {
@@ -40,7 +45,12 @@ public abstract class AccountManager {
 	 * @return the account of the player requested.
 	 */
 	public static Account getAccount(String username) {
-		return accounts.get(username.toLowerCase());
+		for (String name : accounts.keySet()) {
+			if (name.equalsIgnoreCase(username)) {
+				return accounts.get(name);
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -62,15 +72,15 @@ public abstract class AccountManager {
 	 * @return true if the account was successfully updated.
 	 */
 	public static boolean updateAccount(Account account) {
-		Account oldAccount = accounts.get(account.getUsername().toLowerCase());
-		accounts.remove(account.getUsername().toLowerCase());
-		accounts.put(account.getUsername().toLowerCase(), account);
+		Account oldAccount = accounts.get(account.getUsername());
+		accounts.remove(account.getUsername());
+		accounts.put(account.getUsername(), account);
 		Gson gson = Utils.newGson();
 		boolean success = Utils.writeFileAsync("accounts/", account.getUUID().toString() + ".json",
 				 gson.toJson(new AccountFile(account)));
 		if (!success) {
-			accounts.remove(account.getUsername().toLowerCase());
-			accounts.put(account.getUsername().toLowerCase(), oldAccount);
+			accounts.remove(account.getUsername());
+			accounts.put(account.getUsername(), oldAccount);
 			ErrorManager.addError("Failed to write account to storage for account: " + account.getUsername());
 			Multieconomy.LOGGER.error("Failed to write account to storage for account: " + account.getUsername());
 			return false;
@@ -86,10 +96,10 @@ public abstract class AccountManager {
 	 * @return the create account.
 	 */
 	public static boolean createAccount(UUID uuid, String username) {
-		accounts.put(username.toLowerCase(), new Account(uuid, username));
+		accounts.put(username, new Account(uuid, username));
 		Gson gson = Utils.newGson();
-		boolean success = Utils.writeFileAsync("accounts/", accounts.get(username.toLowerCase()).getUUID().toString() + ".json",
-				gson.toJson(new AccountFile(accounts.get(username.toLowerCase()))));
+		boolean success = Utils.writeFileAsync("accounts/", getAccount(username).getUUID().toString() + ".json",
+				gson.toJson(new AccountFile(accounts.get(username))));
 		if (!success) {
 			ErrorManager.addError("Failed to write account to storage for account: " + username);
 			Multieconomy.LOGGER.error("Failed to write account to storage for account: " + username);
@@ -115,7 +125,7 @@ public abstract class AccountManager {
 				readFileAsync("accounts/", file, (el -> {
 					Gson gson = Utils.newGson();
 					AccountFile accountFile = gson.fromJson(el, AccountFile.class);
-					accounts.put(accountFile.getUsername().toLowerCase(), new Account(accountFile));
+					accounts.put(accountFile.getUsername(), new Account(accountFile));
 				}));
 			}
 		} catch (Exception e) {

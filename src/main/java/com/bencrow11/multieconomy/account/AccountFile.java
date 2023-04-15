@@ -12,7 +12,7 @@ public class AccountFile {
 
 	public AccountFile(Account account) {
 		this.uuid = account.getUUID().toString();
-		this.username = account.getUsername().toLowerCase();
+		this.username = account.getUsername();
 
 		// Adds the used currencies to a list, with their name as the identifier.
 		for (Currency currency : account.getBalances().keySet()) {

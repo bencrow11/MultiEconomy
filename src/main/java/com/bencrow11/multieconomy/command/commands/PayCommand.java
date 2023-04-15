@@ -10,19 +10,11 @@ import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider;
-import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 
 public abstract class PayCommand {
@@ -156,7 +148,7 @@ public abstract class PayCommand {
 			return 1;
 		}
 
-		context.getSource().sendMessage(Text.literal(Utils.formatMessage("§cUnable to add currency to the account.",
+		context.getSource().sendMessage(Text.literal(Utils.formatMessage("§cUnable to pay player.",
 				isPlayer)));
 		return -1;
 	}

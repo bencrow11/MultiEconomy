@@ -41,7 +41,9 @@ public class Utils {
 				Files.createDirectory(Path.of(BASE_PATH + filePath));
 			}
 
-			AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE, StandardOpenOption.CREATE);
+			AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE,
+					StandardOpenOption.CREATE,
+					StandardOpenOption.TRUNCATE_EXISTING);
 			ByteBuffer buffer = ByteBuffer.allocate(1024);
 			buffer.put(data.getBytes());
 			buffer.flip();

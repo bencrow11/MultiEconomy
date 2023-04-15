@@ -23,7 +23,10 @@ public abstract class BaseCommand {
 
 		dispatcher.getRoot().addChild(root);
 
-		Utils.registerAliases(dispatcher, root);
+
+		for (String alias : Multieconomy.ALIASES) {
+			dispatcher.register(CommandManager.literal(alias).redirect(root).executes(BaseCommand::run));
+		}
 
 		root.addChild(new AddBalanceCommand().build());
 		root.addChild(new RemoveBalanceCommand().build());

@@ -19,9 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.function.Consumer;
 
 public class Utils {
@@ -201,13 +199,6 @@ public class Utils {
 				" doesn't match any existing currency name.");
 
 		return false;
-	}
-
-	public static void registerAliases(CommandDispatcher<ServerCommandSource> dispatcher,
-	                                   LiteralCommandNode<ServerCommandSource> command) {
-		for (String alias : Multieconomy.ALIASES) {
-			dispatcher.register(CommandManager.literal(alias).redirect(command));
-		}
 	}
 
 	public static String formatMessage(String message, Boolean isPlayer) {

@@ -36,7 +36,7 @@ public abstract class BalCommand {
 
 		dispatcher.getRoot().addChild(root);
 
-		dispatcher.register(CommandManager.literal("bal").redirect(root));
+		dispatcher.register(CommandManager.literal("bal").redirect(root).executes(BalCommand::run));
 	}
 
 	public static int run(CommandContext<ServerCommandSource> context) {

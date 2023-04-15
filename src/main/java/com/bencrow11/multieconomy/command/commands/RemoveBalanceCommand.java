@@ -36,6 +36,10 @@ public class RemoveBalanceCommand implements SubCommandInterface {
 								})
 								.executes(this::showUsage)
 								.then(CommandManager.argument("amount", FloatArgumentType.floatArg())
+										.suggests((ctx, builder) -> {
+											CommandSource.suggestMatching(new String[]{"1", "10", "100", "1000"}, builder);
+											return builder.buildFuture();
+										})
 										.executes(this::run))))
 				.build();
 	}

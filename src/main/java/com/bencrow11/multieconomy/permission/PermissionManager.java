@@ -15,6 +15,7 @@ public class PermissionManager {
 
 	public static final String PAY_PERMISSION = USER_PERMISSIONS + "command.pay";
 	public static final String BAL_PERMISSION = USER_PERMISSIONS + "command.bal";
+	public static final String BALTOP_PERMISSION = USER_PERMISSIONS + "command.baltop";
 
 	public static final String HELP_EXTRAS_PERMISSION = ADMIN_PERMISSIONS + "help";
 	public static final String LOGIN_NOTIFY_PERMISSION = ADMIN_PERMISSIONS + "notify";

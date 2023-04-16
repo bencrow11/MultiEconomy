@@ -25,23 +25,27 @@ public class HelpCommand implements SubCommandInterface {
 
 		if (isPlayer) {
 			if (PermissionManager.hasPermission(playerSource.getUuid(), PermissionManager.HELP_EXTRAS_PERMISSION)) {
-				usage = usage +
-						"> /meco add <player> <currency> <amount>\n" +
-						"> /meco remove <player> <currency> <amount>\n" +
-						"> /meco set <player> <currency> <amount>\n" +
-						"> /meco clear <player> <currency>\n";
+				usage = usage + adminHelp();
+
 			}
 		} else {
-			usage = usage +
-					"> /meco add <player> <currency> <amount>\n" +
-					"> /meco remove <player> <currency> <amount>\n" +
-					"> /meco set <player> <currency> <amount>\n" +
-					"> /meco clear <player> <currency>\n";
+			usage = usage + adminHelp();
 		}
 		usage = usage +
-				"> /meco help";
+				"> /meco help\n" +
+				"> /pay <player> <amount> [currency]\n" +
+				"> /bal [player]\n" +
+				"> /baltop [currency]";
 
 		context.getSource().sendMessage(Text.literal(Utils.formatMessage(usage, isPlayer)));
 		return 1;
+	}
+
+	private String adminHelp() {
+		return "> /meco add <player> <currency> <amount>\n" +
+				"> /meco remove <player> <currency> <amount>\n" +
+				"> /meco set <player> <currency> <amount>\n" +
+				"> /meco clear <player> <currency>\n" +
+				"> /meco reload\n";
 	}
 }

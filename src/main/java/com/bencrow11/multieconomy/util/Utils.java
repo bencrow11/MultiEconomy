@@ -210,4 +210,18 @@ public class Utils {
 			return message.replaceAll("§[0-9a-fk-or]", "").trim();
 		}
 	}
+
+	/**
+	 * Checks if a string can be parsed to integer.
+	 * @param string the string to try and parse.
+	 * @return true if the string can be parsed.
+	 */
+	public static boolean isStringInt(String string) {
+		try {
+			Integer.parseInt(string);
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
+	}
 }

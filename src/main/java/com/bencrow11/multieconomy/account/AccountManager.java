@@ -2,12 +2,13 @@ package com.bencrow11.multieconomy.account;
 
 import com.bencrow11.multieconomy.ErrorManager;
 import com.bencrow11.multieconomy.Multieconomy;
+import com.bencrow11.multieconomy.currency.Currency;
 import com.bencrow11.multieconomy.util.Utils;
 import com.google.gson.Gson;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.bencrow11.multieconomy.util.Utils.readFileAsync;
 
@@ -65,6 +66,14 @@ public abstract class AccountManager {
 		return null;
 	}
 
+	/**
+	 * Method to get all accounts in memory.
+	 * @return ArrayList that holds all players accounts.
+	 */
+	public static ArrayList<Account> getAllAccounts() {
+		return (ArrayList<Account>) accounts.values();
+	}
+
 
 	/**
 	 * Method to update an account with the one provided.
@@ -107,6 +116,23 @@ public abstract class AccountManager {
 		}
 		return true;
 	}
+
+	/**
+	 * Gets all sorted account balances of a given currency.
+	 * @param currency the currency to sort by.
+	 * @return ArrayList that holds a lists containing a username and balance.
+	 */
+	public static List<Account> sortAccountsByBalance(Currency currency) {
+
+		Comparator<Account> currencyComparator = ((ac1, ac2) -> Float.compare(ac1.getBalance(currency), ac2.getBalance(currency)));
+
+		List<Account> sortedAccounts = accounts.values().
+				stream().
+				sorted(currencyComparator.reversed()).toList();
+
+		return sortedAccounts;
+	}
+
 
 	/**
 	 * Method to initialise the AccountManager when the server starts.

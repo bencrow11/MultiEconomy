@@ -69,7 +69,7 @@ public class Config {
 
 	public Currency getCurrencyByName(String currencyName) {
 		for (Currency currency : currencies) {
-			if (currency.getName().toLowerCase().trim().equals(currencyName.toLowerCase().trim())) {
+			if (currency.getName().trim().equalsIgnoreCase(currencyName.trim())) {
 				return currency;
 			}
 		}

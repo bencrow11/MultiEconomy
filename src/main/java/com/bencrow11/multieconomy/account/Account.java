@@ -37,7 +37,7 @@ public class Account {
 	 */
 	public Account(AccountFile account) {
 		this.uuid = UUID.fromString(account.getUUID());
-		this.username = account.getUsername().toLowerCase();
+		this.username = account.getUsername();
 
 		HashMap<String, Float> storedBalances = account.getBalances();
 
@@ -187,12 +187,12 @@ public class Account {
 
 	@Override
 	public String toString() {
-		String base = this.getUUID().toString() + ": \n";
+		String base = this.getUsername()+ ": \n";
 
 		for (Currency currency : getBalances().keySet()) {
-			base = base + "Currency:\n" + currency.getName() + getBalance(currency) + "\n";
+			base = base  + currency.getName() + ": " + getBalance(currency) + "\n";
 		}
 
-		return base;
+		return base.trim();
 	}
 }

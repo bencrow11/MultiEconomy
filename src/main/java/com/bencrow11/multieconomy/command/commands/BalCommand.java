@@ -72,10 +72,10 @@ public abstract class BalCommand {
 			account = AccountManager.getAccount(playerArg);
 		}
 
-		String output = "§b" + account.getUsername() + "§a's balances:\n";
+		String output = "§7=== §eBalances §7(§b" + account.getUsername() + "§7) ===\n\n";
 
 		for (Currency balance : account.getBalances().keySet()) {
-			output += balance.getPlural() + ": §b" + account.getBalance(balance) + "§a\n";
+			output += "§7- §b" + balance.getPlural() + "§7: §f" + account.getBalance(balance) + "\n";
 		}
 
 		context.getSource().sendMessage(Text.literal(Utils.formatMessage(output,

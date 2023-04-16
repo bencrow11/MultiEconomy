@@ -23,6 +23,7 @@ public class PermissionManager {
 	public static final String REMOVE_BALANCE_PERMISSION = ADMIN_PERMISSIONS + "remove";
 	public static final String SET_BALANCE_PERMISSION = ADMIN_PERMISSIONS + "set";
 	public static final String CLEAR_BALANCE_PERMISSION = ADMIN_PERMISSIONS + "clear";
+	public static final String RELOAD_PERMISSION = ADMIN_PERMISSIONS + "reload";
 
 	public static boolean hasPermission(UUID user, String permission) {
 		User playerLP = LuckPermsProvider.get().getUserManager().getUser(user);

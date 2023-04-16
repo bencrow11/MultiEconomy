@@ -33,6 +33,7 @@ public abstract class BaseCommand {
 		root.addChild(new SetBalanceCommand().build());
 		root.addChild(new ClearBalanceCommand().build());
 		root.addChild(new HelpCommand().build());
+		root.addChild(new ReloadCommand().build());
 	}
 
 	public static int run(CommandContext<ServerCommandSource> context) {

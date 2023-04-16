@@ -28,7 +28,13 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
+/**
+ * Creates the command "/pay <player> <amount> [currency]" in game.
+ */
 public abstract class PayCommand {
+	/**
+	 * Method to register and build the command.
+	 */
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher,
 	                            CommandRegistryAccess commandRegistryAccess,
 	                            CommandManager.RegistrationEnvironment registrationEnvironment) {
@@ -60,10 +66,16 @@ public abstract class PayCommand {
 		dispatcher.getRoot().addChild(root);
 	}
 
+	/**
+	 * Method that's used to execute the functionality for the command.
+	 * @param context the source of the command.
+	 * @return integer to complete the command.
+	 */
 	public static int run(CommandContext<ServerCommandSource> context) {
 		boolean isPlayer = context.getSource().isExecutedByPlayer();
 		ServerPlayerEntity playerSource = context.getSource().getPlayer();
 
+		// If the source is a player, check for permission.
 		if (isPlayer) {
 			if (!PermissionManager.hasPermission(playerSource.getUuid(), PermissionManager.PAY_PERMISSION)) {
 				context.getSource().sendMessage(Text.literal("§cYou need the permission §b" +
@@ -73,10 +85,14 @@ public abstract class PayCommand {
 			}
 		}
 
+		// Collects the arguments from the command.
 		String playerArg = StringArgumentType.getString(context, "player");
 		float amountArg = FloatArgumentType.getFloat(context, "amount");
+
+		// Checks the player is online
 		boolean targetIsOnline = context.getSource().getPlayerNames().contains(playerArg);
 
+		// If offline payments are disabled, and the target player is offline, tell the sender.
 		if (!ConfigManager.getConfig().isAllowOfflinePayments()) {
 			if (!targetIsOnline) {
 				context.getSource().sendMessage(Text.literal("§cYou can not pay offline players."));
@@ -84,34 +100,41 @@ public abstract class PayCommand {
 			}
 		}
 
+		// If the target player is also the sender (paying themselves), tell them this isn't allowed.
 		if (playerSource.getEntityName().equalsIgnoreCase(playerArg)) {
 			context.getSource().sendMessage(Text.literal("§cYou can not pay yourself."));
 			return -1;
 		}
 
+		// If the target doesn't have an account, tell the sender.
 		if (!AccountManager.hasAccount(playerArg)) {
 			context.getSource().sendMessage(Text.literal(Utils.formatMessage("§cPlayer " + playerArg + " doesn't " +
 					"exist.", isPlayer)));
 			return -1;
 		}
 
+		// If the amount to pay is less than or equal to 0, tell the player they can not do this.
 		if (amountArg <= 0) {
 			context.getSource().sendMessage(Text.literal(Utils.formatMessage("§cAmount must be greater than 0.", isPlayer)));
 			return -1;
 		}
 
+		// Count the amount of arguments.
 		int argLength = context.getInput().split(" ").length;
 
 		Currency currency = null;
 
+		// If there are three arguments, use the default currency.
 		if (argLength == 3) {
 			currency = ConfigManager.getConfig().getCurrencyByName(ConfigManager.getConfig().getDefaultCurrency());
 		}
 
+		// If there are four arguments, get the currency of the one from the command.
 		if (argLength == 4) {
 			currency = ConfigManager.getConfig().getCurrencyByName(StringArgumentType.getString(context, "currency"));
 		}
 
+		// If the currency doesn't exist, tell the sender the currency doesn't exist.
 		if (currency == null) {
 			if (argLength == 3) {
 				context.getSource().sendMessage(Text.literal(Utils.formatMessage("§cCurrency " +
@@ -124,6 +147,7 @@ public abstract class PayCommand {
 			}
 		}
 
+		// If the currency does not allow payments, inform the sender.
 		if (!currency.isAllowPayments()) {
 			context.getSource().sendMessage(Text.literal(Utils.formatMessage("§cYou can not pay players with" +
 					" this currency.",
@@ -131,6 +155,7 @@ public abstract class PayCommand {
 			return -1;
 		}
 
+		// If the sender doesn't have enough money, tell them.
 		if (AccountManager.getAccount(playerSource.getUuid()).getBalance(currency) < amountArg) {
 			context.getSource().sendMessage(Text.literal(Utils.formatMessage("§cYou do not have enough money in " +
 							currency.getPlural() + " to pay.",
@@ -138,9 +163,11 @@ public abstract class PayCommand {
 			return -1;
 		}
 
+		// Remove money from the sender and add it to the target.
 		boolean successRemove = AccountManager.getAccount(playerSource.getUuid()).remove(currency, amountArg);
 		boolean successAdd = AccountManager.getAccount(playerArg).add(currency, amountArg);
 
+		// If both transactions were successful, inform the sender and target.
 		if (successAdd && successRemove) {
 			if (amountArg == 1) {
 				context.getSource().sendMessage(Text.literal(Utils.formatMessage("§aSuccessfully paid §b" +
@@ -159,11 +186,17 @@ public abstract class PayCommand {
 			return 1;
 		}
 
+		// Any other case, tell the player something went wrong.
 		context.getSource().sendMessage(Text.literal(Utils.formatMessage("§cUnable to pay player.",
 				isPlayer)));
 		return -1;
 	}
 
+	/**
+	 * Method used to show the usage of the command.
+	 * @param context the source of the command
+	 * @return integer to complete command.
+	 */
 	public static int showUsage(CommandContext<ServerCommandSource> context) {
 
 		String usage = "§9§lMultiEconomy Command Usage - §r§3pay\n" +

@@ -21,37 +21,59 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
+/**
+ * Creates the command "/meco add" in game.
+ */
 public class HelpCommand implements SubCommandInterface {
 
+	/**
+	 * Method used to add to the base command for this subcommand.
+	 * @return source to complete the command.
+	 */
 	@Override
 	public LiteralCommandNode<ServerCommandSource> build() {
 		return CommandManager.literal("help").executes(this::run).build();
 	}
 
+	/**
+	 * Method to perform the logic when the command is executed.
+	 * @param context the source of the command.
+	 * @return integer to complete command.
+	 */
 	public int run(CommandContext<ServerCommandSource> context) {
 
 		boolean isPlayer = context.getSource().isExecutedByPlayer();
 		ServerPlayerEntity playerSource = context.getSource().getPlayer();
+
+		// Create the output string.
 		String usage = "§2MultiEconomy Commands:\n";
 
+		// If the source is a player, check for a permission to view admin commands.
 		if (isPlayer) {
 			if (PermissionManager.hasPermission(playerSource.getUuid(), PermissionManager.HELP_EXTRAS_PERMISSION)) {
-				usage = usage + adminHelp();
+				usage = usage + adminHelp(); // Add the admin commands to the output string.
 
 			}
 		} else {
+			// If the sender isn't a payer, add the admin commands to the output string.
 			usage = usage + adminHelp();
 		}
+		// Add standard commands to the output string.
 		usage = usage +
 				"> /meco help\n" +
 				"> /pay <player> <amount> [currency]\n" +
 				"> /bal [player]\n" +
 				"> /baltop [currency]";
 
+		// Send the output string to the player.
 		context.getSource().sendMessage(Text.literal(Utils.formatMessage(usage, isPlayer)));
 		return 1;
 	}
 
+	/**
+	 * Method to store the admin help string in.
+	 * @return String that holds the admin commands.
+	 */
 	private String adminHelp() {
 		return "> /meco add <player> <currency> <amount>\n" +
 				"> /meco remove <player> <currency> <amount>\n" +

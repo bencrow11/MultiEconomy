@@ -16,6 +16,9 @@ import com.bencrow11.multieconomy.command.commands.BalTopCommand;
 import com.bencrow11.multieconomy.command.commands.PayCommand;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 
+/**
+ * Abstract class to register all commands.
+ */
 public abstract class CommandRegistry {
 	public static void registerCommands() {
 		CommandRegistrationCallback.EVENT.register(BaseCommand::register);

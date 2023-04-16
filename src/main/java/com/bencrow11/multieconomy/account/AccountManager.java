@@ -27,10 +27,10 @@ import static com.bencrow11.multieconomy.util.Utils.readFileAsync;
  * Allows creation, updating and retrieving accounts.
  */
 public abstract class AccountManager {
-	private static HashMap<String, Account> accounts = new HashMap<>();
+	private static HashMap<String, Account> accounts = new HashMap<>(); // Memory storage for accounts.
 
 	/**
-	 * Method to tell if the player has an account.
+	 * Method that checks a user has an account using the username.
 	 * @param username the username of the player to check.
 	 * @return true if the player has an account.
 	 */
@@ -43,6 +43,11 @@ public abstract class AccountManager {
 		return false;
 	}
 
+	/**
+	 * Method that checks a user has an account using the UUID.
+	 * @param uuid the UUID of the player to check.
+	 * @return true if the player has an account.
+	 */
 	public static boolean hasAccount(UUID uuid) {
 		for (Account account : accounts.values()) {
 			if (account.getUUID().equals(uuid)) return true;
@@ -143,7 +148,6 @@ public abstract class AccountManager {
 		return sortedAccounts;
 	}
 
-
 	/**
 	 * Method to initialise the AccountManager when the server starts.
 	 */
@@ -153,14 +157,17 @@ public abstract class AccountManager {
 
 			String[] list = dir.list();
 
+			// If no files, return.
 			if (list.length == 0) {
 				return;
 			}
 
 			for (String file : list) {
+				// Read the file, convert it AccountFile object and then load the account to memory.
 				readFileAsync("accounts/", file, (el -> {
 					Gson gson = Utils.newGson();
 					AccountFile accountFile = gson.fromJson(el, AccountFile.class);
+					// Add the account to accounts hashmap.
 					accounts.put(accountFile.getUsername(), new Account(accountFile));
 				}));
 			}

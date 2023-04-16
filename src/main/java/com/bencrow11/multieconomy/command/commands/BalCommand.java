@@ -29,7 +29,13 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
+/**
+ * Creates the command "/bal [player]" in game.
+ */
 public abstract class BalCommand {
+	/**
+	 * Method to register and build the command.
+	 */
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher,
 	                            CommandRegistryAccess commandRegistryAccess,
 	                            CommandManager.RegistrationEnvironment registrationEnvironment) {
@@ -47,13 +53,20 @@ public abstract class BalCommand {
 
 		dispatcher.getRoot().addChild(root);
 
+		// Adds alias bal to balance
 		dispatcher.register(CommandManager.literal("bal").redirect(root).executes(BalCommand::run));
 	}
 
+	/**
+	 * Method that's used to execute the functionality for the command.
+	 * @param context the source of the command.
+	 * @return integer to complete the command.
+	 */
 	public static int run(CommandContext<ServerCommandSource> context) {
 		boolean isPlayer = context.getSource().isExecutedByPlayer();
 		ServerPlayerEntity playerSource = context.getSource().getPlayer();
 
+		// If the source is a player, check for permission.
 		if (isPlayer) {
 			if (!PermissionManager.hasPermission(playerSource.getUuid(), PermissionManager.BAL_PERMISSION)) {
 				context.getSource().sendMessage(Text.literal("§cYou need the permission §b" +
@@ -63,17 +76,21 @@ public abstract class BalCommand {
 			}
 		}
 
+		// Counts the amount of arguments given.
 		int argLength = context.getInput().split(" ").length;
 
 		Account account = null;
 
+		// If only one argument is given (bal) then display the senders balances.
 		if (argLength == 1) {
 			account = AccountManager.getAccount(context.getSource().getPlayer().getUuid());
 		}
 
+		// If two arguments are given, get the balance of the player given and display it.
 		if (argLength == 2) {
 			String playerArg = StringArgumentType.getString(context, "player");
 
+			// If the player doesn't have an account, tell the sender the player doesn't exist.
 			if (!AccountManager.hasAccount(playerArg)) {
 				context.getSource().sendMessage(Text.literal(Utils.formatMessage("§cPlayer " + playerArg + " doesn't " +
 						"exist.", isPlayer)));
@@ -83,12 +100,15 @@ public abstract class BalCommand {
 			account = AccountManager.getAccount(playerArg);
 		}
 
+		// Create the string to send back to the sender.
 		String output = "§7=== §eBalances §7(§b" + account.getUsername() + "§7) ===\n\n";
 
+		// Add each balance on the account to the string.
 		for (Currency balance : account.getBalances().keySet()) {
 			output += "§7- §b" + balance.getPlural() + "§7: §f" + account.getBalance(balance) + "\n";
 		}
 
+		// Send the balances to the sender.
 		context.getSource().sendMessage(Text.literal(Utils.formatMessage(output,
 				isPlayer)));
 		return 1;

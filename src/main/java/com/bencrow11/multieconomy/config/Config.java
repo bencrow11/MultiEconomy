@@ -78,6 +78,11 @@ public class Config {
 		return strings;
 	}
 
+	/**
+	 * Method to get a currency by it's name.
+	 * @param currencyName The name of the currency.
+	 * @return The currency if it exists. Otherwise null.
+	 */
 	public Currency getCurrencyByName(String currencyName) {
 		for (Currency currency : currencies) {
 			if (currency.getName().trim().equalsIgnoreCase(currencyName.trim())) {

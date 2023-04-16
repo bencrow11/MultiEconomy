@@ -29,30 +29,40 @@ public abstract class ConfigManager {
 
 		Config cfg = null;
 
+		// Read the config from file.
 		cfg = Utils.readFromFile("", "config", Config.class);
 
+		// If there is no config in file, create a new one.
 		if (cfg == null) {
 			Multieconomy.LOGGER.info("Couldn't find config for MultiEconomy, creating new config.");
 			boolean success = Utils.writeToFile("", "config", new Config());
 
+			// If writing the file failed, give an error.
 			if (!success) {
 				ErrorManager.addError("Failed to create config. Please check the console for any errors.");
 				return;
 			}
 
+			// Read the config from file.
 			cfg = Utils.readFromFile("", "config", Config.class);
 		}
 
 
-			boolean hasPassed = Utils.checkConfig(cfg);
+		// Check the config is valid.
+		boolean hasPassed = Utils.checkConfig(cfg);
 
-			if (!hasPassed) {
-				ErrorManager.addError("Config is invalid. Please regenerate or fix the errors.");
-			}
+		// If the config isn't valid, give an error.
+		if (!hasPassed) {
+			ErrorManager.addError("Config is invalid. Please regenerate or fix the errors.");
+		}
 
 			multiEcoConfig = cfg;
 	}
 
+	/**
+	 * getter for the config.
+	 * @return The config being used.
+	 */
 	public static Config getConfig() {
 		return ConfigManager.multiEcoConfig;
 	}

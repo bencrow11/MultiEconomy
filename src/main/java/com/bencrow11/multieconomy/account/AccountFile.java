@@ -15,12 +15,20 @@ import com.bencrow11.multieconomy.currency.Currency;
 
 import java.util.HashMap;
 
+/**
+ * Class that is used to convert an Account to the correct format for saving to file.
+ * This is only used for reading / writing to file.
+ */
 public class AccountFile {
 	private final String uuid;
 	private final String username;
 	private HashMap<String, Float> balances = new HashMap<>();
 
-
+	/**
+	 * Constructor that takes an account and converts it to the correct format
+	 * for the class.
+	 * @param account A users account.
+	 */
 	public AccountFile(Account account) {
 		this.uuid = account.getUUID().toString();
 		this.username = account.getUsername();

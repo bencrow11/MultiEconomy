@@ -32,8 +32,15 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
+/**
+ * Creates the command "/meco reload" in game.
+ */
 public class ReloadCommand implements SubCommandInterface {
 
+	/**
+	 * Method used to add to the base command for this subcommand.
+	 * @return source to complete the command.
+	 */
 	@Override
 	public LiteralCommandNode<ServerCommandSource> build() {
 		return CommandManager.literal("reload")
@@ -41,11 +48,17 @@ public class ReloadCommand implements SubCommandInterface {
 				.build();
 	}
 
+	/**
+	 * Method to perform the logic when the command is executed.
+	 * @param context the source of the command.
+	 * @return integer to complete command.
+	 */
 	public int run(CommandContext<ServerCommandSource> context) {
 
 		boolean isPlayer = context.getSource().isExecutedByPlayer();
 		ServerPlayerEntity playerSource = context.getSource().getPlayer();
 
+		// If the source is a player, check for a permission.
 		if (isPlayer) {
 			if (!PermissionManager.hasPermission(playerSource.getUuid(), PermissionManager.RELOAD_PERMISSION)) {
 				context.getSource().sendMessage(Text.literal("§cYou need the permission §b" +
@@ -55,9 +68,11 @@ public class ReloadCommand implements SubCommandInterface {
 			}
 		}
 
-		context.getSource().sendMessage(Text.literal(Utils.formatMessage("§aReloading Config.",
+		// Tell the sender the mod is being reloaded.
+		context.getSource().sendMessage(Text.literal(Utils.formatMessage("§aReloading MultiEconomy.",
 				isPlayer)));
 
+		// Reload the mod.
 		ConfigManager.loadConfig(); // Loads the config from file.
 		AccountManager.initialise(); // Adds saved accounts to memory.
 		ServerPlayConnectionEvents.JOIN.register(new PlayerJoinHandler()); // Registers PlayerJoin event handler.
@@ -65,6 +80,7 @@ public class ReloadCommand implements SubCommandInterface {
 		Multieconomy.LOGGER.info("MultiEconomy reloaded.");
 		ErrorManager.printErrorsToConsole();
 
+		// If there are any errors, inform the player.
 		if (ErrorManager.getErrors().size() != 0) {
 			context.getSource().sendMessage(Text.literal(Utils.formatMessage("§cErrors occurred while reloading.",
 					isPlayer)));
@@ -76,6 +92,7 @@ public class ReloadCommand implements SubCommandInterface {
 			return -1;
 		}
 
+		// Tell the player that the mod has been reloaded.
 		context.getSource().sendMessage(Text.literal(Utils.formatMessage("§aMultiEconomy reloaded successfully.",
 				isPlayer)));
 		return 1;

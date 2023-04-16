@@ -21,7 +21,14 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 
+/**
+ * Creates the command "/meco" in game.
+ */
 public abstract class BaseCommand {
+
+	/**
+	 * Method to register and build the command.
+	 */
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher,
 	                            CommandRegistryAccess commandRegistryAccess,
 	                            CommandManager.RegistrationEnvironment registrationEnvironment) {
@@ -33,11 +40,12 @@ public abstract class BaseCommand {
 
 		dispatcher.getRoot().addChild(root);
 
-
+		// Add the aliases to the base command.
 		for (String alias : Multieconomy.ALIASES) {
 			dispatcher.register(CommandManager.literal(alias).redirect(root).executes(BaseCommand::run));
 		}
 
+		// Add the subcommands.
 		root.addChild(new AddBalanceCommand().build());
 		root.addChild(new RemoveBalanceCommand().build());
 		root.addChild(new SetBalanceCommand().build());
@@ -46,6 +54,7 @@ public abstract class BaseCommand {
 		root.addChild(new ReloadCommand().build());
 	}
 
+	// Runs when the base command is run with no subcommands.
 	public static int run(CommandContext<ServerCommandSource> context) {
 		context.getSource().sendMessage(Text.literal("§aRunning §bMultiEconomy §b" + Multieconomy.VERSION +
 				"§a."));

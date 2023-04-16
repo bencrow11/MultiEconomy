@@ -196,6 +196,10 @@ public class Account {
 		return AccountManager.updateAccount(this);
 	}
 
+	/**
+	 * toString method for a single account.
+ 	 * @return String that represents the account.
+	 */
 	@Override
 	public String toString() {
 		String base = this.getUsername()+ ": \n";

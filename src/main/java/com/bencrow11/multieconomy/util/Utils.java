@@ -28,8 +28,12 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
-public class Utils {
+/**
+ * Class for utility methods.
+ */
+public abstract class Utils {
 
+	// Base path for the mods folder.
 	public static final String BASE_PATH = new File("").getAbsolutePath() + "/config/MultiEconomy/";
 
 	/**
@@ -43,10 +47,12 @@ public class Utils {
 		try {
 			Path path = Paths.get(BASE_PATH + filePath + filename);
 
+			// If the path doesn't exist, create it.
 			if (!Files.exists(Paths.get(BASE_PATH + filePath))) {
 				Files.createDirectory(Path.of(BASE_PATH + filePath));
 			}
 
+			// Write the data to file.
 			AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE,
 					StandardOpenOption.CREATE,
 					StandardOpenOption.TRUNCATE_EXISTING);
@@ -82,10 +88,12 @@ public class Utils {
 		try {
 			Path path = Paths.get(BASE_PATH + filePath + filename);
 
+			// If the directory doesn't exist, return false.
 			if (!Files.exists(Paths.get(BASE_PATH + filePath))) {
 				return false;
 			}
 
+			// Read the file.
 			AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.READ);
 			ByteBuffer buffer = ByteBuffer.allocate(1024);
 
@@ -110,12 +118,20 @@ public class Utils {
 		}
 	}
 
+	/**
+	 * Synchronous read method for json files.
+	 * @param subpath The path to add to the base path.
+	 * @param filename The name of the file to read.
+	 * @param dataType The class the file should be parsed to.
+	 * @return The object with the read data.
+	 */
 	public static <T> T readFromFile(String subpath, String filename, Class<T> dataType) {
 		try {
 			File dir = checkForDirectory(BASE_PATH + subpath);
 
 			String[] list = findFileName(dir, filename + ".json");
 
+			// If no file exists, return null.
 			if (list.length == 0) {
 				return null;
 			}
@@ -125,6 +141,7 @@ public class Utils {
 
 			Reader reader = new FileReader(file);
 
+			// Read the file and parse it to an object.
 			T data = gson.fromJson(reader, dataType);
 
 			reader.close();
@@ -136,6 +153,13 @@ public class Utils {
 		}
 	}
 
+	/**
+	 * Synchronous method to write an object as json.
+	 * @param subpath The path to add to the base path.
+	 * @param filename The name of the file.
+	 * @param data The data to write to the file.
+	 * @return true if the file was successfully written.
+	 */
 	public static boolean writeToFile(String subpath, String filename, Object data) {
 		try {
 			File dir = checkForDirectory(BASE_PATH + subpath);
@@ -145,12 +169,14 @@ public class Utils {
 			File file = new File(dir, filename + ".json");
 			Gson gson = newGson();
 
+			// If the file doesn't exist, create it.
 			if (list.length == 0) {
 				file.createNewFile();
 			}
 
 			Writer writer = new FileWriter(file, false);
 
+			// Parse the object to json and write to file.
 			gson.toJson(data, writer);
 			writer.flush();
 			writer.close();
@@ -161,6 +187,11 @@ public class Utils {
 		}
 	}
 
+	/**
+	 * Method to check if a directory exists. If it doesn't, create it.
+	 * @param path The directory to check.
+	 * @return the directory as a File.
+	 */
 	public static File checkForDirectory(String path) {
 		File dir = new File(path);
 		if (!dir.exists()) {
@@ -169,10 +200,20 @@ public class Utils {
 		return dir;
 	}
 
+	/**
+	 * Finds a file from a directory.
+	 * @param dir the directory to check for the file.
+	 * @param filename the file to check for.
+	 * @return A list of files that match the filename.
+	 */
 	private static String[] findFileName(File dir, String filename) {
 		return dir.list((dir1, name) -> name.equals(filename));
 	}
 
+	/**
+	 * Method to create a new gson builder.
+	 * @return Gson instance.
+	 */
 	public static Gson newGson() {
 		return new GsonBuilder().setPrettyPrinting().create();
 	}
@@ -188,6 +229,7 @@ public class Utils {
 		for (int i = 0; i < currencies.toArray().length; i++) {
 			String currentCurrency = currencies.get(i).getName();
 
+			// Checks for currencies with the same name. (Duplicate currencies)
 			for (int x = i + 1; x < currencies.toArray().length; x++) {
 				String comparedCurrency = currencies.get(x).getName();
 				if (currentCurrency.equals(comparedCurrency)) {
@@ -197,18 +239,26 @@ public class Utils {
 			}
 		}
 
+		// Checks that the default currency exists.
 		for (Currency currency : currencies) {
 			String currencyFormatted = currency.getName().trim().toLowerCase();
 			if (currencyFormatted.equals(defaultCurrency)) {
 				return true;
 			}
 		}
+		// If the default currency doesn't exist, create an error.
 		ErrorManager.addError("Multicurrency default currency " + cfg.getDefaultCurrency() +
 				" doesn't match any existing currency name.");
 
 		return false;
 	}
 
+	/**
+	 * Formats a message by removing minecraft formatting codes if sending to console.
+	 * @param message The message to format.
+	 * @param isPlayer If the sender is a player or console.
+	 * @return String that is the formatted message.
+	 */
 	public static String formatMessage(String message, Boolean isPlayer) {
 		if (isPlayer) {
 			return message.trim();

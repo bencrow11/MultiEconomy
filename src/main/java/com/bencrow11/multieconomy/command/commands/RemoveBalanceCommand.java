@@ -27,8 +27,15 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
+/**
+ * Creates the command "/meco remove" in game.
+ */
 public class RemoveBalanceCommand implements SubCommandInterface {
 
+	/**
+	 * Method used to add to the base command for this subcommand.
+	 * @return source to complete the command.
+	 */
 	@Override
 	public LiteralCommandNode<ServerCommandSource> build() {
 		return CommandManager.literal("remove")
@@ -55,11 +62,17 @@ public class RemoveBalanceCommand implements SubCommandInterface {
 				.build();
 	}
 
+	/**
+	 * Method to perform the logic when the command is executed.
+	 * @param context the source of the command.
+	 * @return integer to complete command.
+	 */
 	public int run(CommandContext<ServerCommandSource> context) {
 
 		boolean isPlayer = context.getSource().isExecutedByPlayer();
 		ServerPlayerEntity playerSource = context.getSource().getPlayer();
 
+		// If the source is a player, check for a permission.
 		if (isPlayer) {
 			if (!PermissionManager.hasPermission(playerSource.getUuid(), PermissionManager.REMOVE_BALANCE_PERMISSION)) {
 				context.getSource().sendMessage(Text.literal("§cYou need the permission §b" +
@@ -69,6 +82,7 @@ public class RemoveBalanceCommand implements SubCommandInterface {
 			}
 		}
 
+		// Collect the arguments from the command.
 		String playerArg = StringArgumentType.getString(context, "player");
 		String currencyArg = StringArgumentType.getString(context, "currency");
 		float amountArg = FloatArgumentType.getFloat(context, "amount");
@@ -82,6 +96,7 @@ public class RemoveBalanceCommand implements SubCommandInterface {
 			return -1;
 		}
 
+		// Get the currency
 		Currency currency = ConfigManager.getConfig().getCurrencyByName(currencyArg);
 
 		// Checks the currency exists.
@@ -97,14 +112,17 @@ public class RemoveBalanceCommand implements SubCommandInterface {
 			return -1;
 		}
 
+		// Checks the target player has enough money to remove the amount given in the argument.
 		if (AccountManager.getAccount(playerArg).getBalance(currency) < amountArg) {
 			context.getSource().sendMessage(Text.literal(Utils.formatMessage("§cThis user doesn't have enough §b"  + currency.getPlural() +
 					"§c to remove§b " +  amountArg + " §cfrom their account.", isPlayer)));
 			return -1;
 		}
 
+		// Remove the balance from the player.
 		boolean success = AccountManager.getAccount(playerArg).remove(currency, amountArg);
 
+		// If successful, inform the sender.
 		if (success) {
 			if (amountArg == 1) {
 				context.getSource().sendMessage(Text.literal(Utils.formatMessage("§aSuccessfully removed §b" +
@@ -116,11 +134,17 @@ public class RemoveBalanceCommand implements SubCommandInterface {
 			return 1;
 		}
 
+		// Tell the sender that removing the balance wasn't possible.
 		context.getSource().sendMessage(Text.literal(Utils.formatMessage("§cUnable to remove currency from the " +
 				"account.", isPlayer)));
 		return -1;
 	}
 
+	/**
+	 * Method used to show the usage of the command.
+	 * @param context the source of the command
+	 * @return integer to complete command.
+	 */
 	public int showUsage(CommandContext<ServerCommandSource> context) {
 
 		String usage = "§9§lMultiEconomy Command Usage - §r§3remove\n" +

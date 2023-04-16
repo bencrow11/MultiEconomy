@@ -26,8 +26,15 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
+/**
+ * Creates the command "/meco clear" in game.
+ */
 public class ClearBalanceCommand implements SubCommandInterface {
 
+	/**
+	 * Method used to add to the base command for this subcommand.
+	 * @return source to complete the command.
+	 */
 	@Override
 	public LiteralCommandNode<ServerCommandSource> build() {
 		return CommandManager.literal("clear")
@@ -47,11 +54,17 @@ public class ClearBalanceCommand implements SubCommandInterface {
 				.build();
 	}
 
+	/**
+	 * Method to perform the logic when the command is executed.
+	 * @param context the source of the command.
+	 * @return integer to complete command.
+	 */
 	public int run(CommandContext<ServerCommandSource> context) {
 
 		boolean isPlayer = context.getSource().isExecutedByPlayer();
 		ServerPlayerEntity playerSource = context.getSource().getPlayer();
 
+		// If the source is a player, check for a permission.
 		if (isPlayer) {
 			if (!PermissionManager.hasPermission(playerSource.getUuid(), PermissionManager.CLEAR_BALANCE_PERMISSION)) {
 				context.getSource().sendMessage(Text.literal("§cYou need the permission §b" +
@@ -61,6 +74,7 @@ public class ClearBalanceCommand implements SubCommandInterface {
 			}
 		}
 
+		// Collect the arguments from the command.
 		String playerArg = StringArgumentType.getString(context, "player");
 		String currencyArg = StringArgumentType.getString(context, "currency");
 
@@ -71,6 +85,7 @@ public class ClearBalanceCommand implements SubCommandInterface {
 			return -1;
 		}
 
+		// Gets the currency.
 		Currency currency = ConfigManager.getConfig().getCurrencyByName(currencyArg);
 
 		// Checks the currency exists.
@@ -80,19 +95,27 @@ public class ClearBalanceCommand implements SubCommandInterface {
 			return -1;
 		}
 
+		// Sets the players balance of the currency to 0.
 		boolean success = AccountManager.getAccount(playerArg).set(currency, 0);
 
+		// If successful, inform sender.
 		if (success) {
 			context.getSource().sendMessage(Text.literal(Utils.formatMessage("§aSuccessfully cleared §b" +
 					playerArg + "§a's balance for §b" + currency.getName() + "§a.", isPlayer)));
 			return 1;
 		}
 
+		// Inform user that something went wrong.
 		context.getSource().sendMessage(Text.literal(Utils.formatMessage("§cUnable to clear the accounts balance.",
 				isPlayer)));
 		return -1;
 	}
 
+	/**
+	 * Method used to show the usage of the command.
+	 * @param context the source of the command
+	 * @return integer to complete command.
+	 */
 	public int showUsage(CommandContext<ServerCommandSource> context) {
 
 		String usage = "§9§lMultiEconomy Command Usage - §r§3clear\n" +

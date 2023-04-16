@@ -17,25 +17,33 @@ import net.luckperms.api.model.user.User;
 
 import java.util.UUID;
 
+/**
+ * Class that deals with all MultiEconomy permissions.
+ */
+public abstract class PermissionManager {
+	public static final String BASE_PERMISSION = "multieconomy."; // Base permission for all permissions
 
-public class PermissionManager {
-	public static final String BASE_PERMISSION = "multieconomy.";
+	public static final String USER_PERMISSIONS = BASE_PERMISSION + "user."; // Permission for users
+	public static final String ADMIN_PERMISSIONS = BASE_PERMISSION + "admin."; // Permission for admins
 
-	public static final String USER_PERMISSIONS = BASE_PERMISSION + "user.";
-	public static final String ADMIN_PERMISSIONS = BASE_PERMISSION + "admin.";
+	public static final String PAY_PERMISSION = USER_PERMISSIONS + "command.pay"; // Permission to /pay
+	public static final String BAL_PERMISSION = USER_PERMISSIONS + "command.bal"; // Permission to /bal
+	public static final String BALTOP_PERMISSION = USER_PERMISSIONS + "command.baltop"; // Permission to /baltop
 
-	public static final String PAY_PERMISSION = USER_PERMISSIONS + "command.pay";
-	public static final String BAL_PERMISSION = USER_PERMISSIONS + "command.bal";
-	public static final String BALTOP_PERMISSION = USER_PERMISSIONS + "command.baltop";
+	public static final String HELP_EXTRAS_PERMISSION = ADMIN_PERMISSIONS + "help"; // Permission to admin help
+	public static final String LOGIN_NOTIFY_PERMISSION = ADMIN_PERMISSIONS + "notify"; // Permission to error notifications.
+	public static final String ADD_BALANCE_PERMISSION = ADMIN_PERMISSIONS + "add"; // Permission to /meco add
+	public static final String REMOVE_BALANCE_PERMISSION = ADMIN_PERMISSIONS + "remove"; // Permission to /meco remove
+	public static final String SET_BALANCE_PERMISSION = ADMIN_PERMISSIONS + "set"; // Permission to /meco set
+	public static final String CLEAR_BALANCE_PERMISSION = ADMIN_PERMISSIONS + "clear"; // Permission to /meco clear
+	public static final String RELOAD_PERMISSION = ADMIN_PERMISSIONS + "reload"; // Permission to /meco reload
 
-	public static final String HELP_EXTRAS_PERMISSION = ADMIN_PERMISSIONS + "help";
-	public static final String LOGIN_NOTIFY_PERMISSION = ADMIN_PERMISSIONS + "notify";
-	public static final String ADD_BALANCE_PERMISSION = ADMIN_PERMISSIONS + "add";
-	public static final String REMOVE_BALANCE_PERMISSION = ADMIN_PERMISSIONS + "remove";
-	public static final String SET_BALANCE_PERMISSION = ADMIN_PERMISSIONS + "set";
-	public static final String CLEAR_BALANCE_PERMISSION = ADMIN_PERMISSIONS + "clear";
-	public static final String RELOAD_PERMISSION = ADMIN_PERMISSIONS + "reload";
-
+	/**
+	 * Checks a user has a given permission.
+	 * @param user The user to check the permission on.
+	 * @param permission The permission to check the user has.
+	 * @return true if the user has the permission.
+	 */
 	public static boolean hasPermission(UUID user, String permission) {
 		User playerLP = LuckPermsProvider.get().getUserManager().getUser(user);
 

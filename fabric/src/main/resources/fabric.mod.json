@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "multieconomy",
+  "version": "${version}",
+  "name": "MultiEconomy",
+  "description": "A Minecraft Forge and Fabric economy plugin that supports multiple currencies.",
+  "authors": [
+    "bencrow11"
+  ],
+  "contact": {},
+  "license": "GPL-3.0",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.bencrow11.multieconomy.fabric.MultiEconomyFabric"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.14.19",
+    "minecraft": ">=1.19.4"
+  }
+}

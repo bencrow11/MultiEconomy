@@ -34,10 +34,15 @@ public abstract class PayCommand {
 	/**
 	 * Method to register and build the command.
 	 */
-	public static void register(CommandDispatcher<CommandSourceStack> dispatcher,
-	                            CommandBuildContext commandBuildContext,
-	                            Commands.CommandSelection commandSelection) {
+	public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+		createCommand(dispatcher);
+	}
 
+	public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext commandBuildContext, Commands.CommandSelection commandSelection) {
+		createCommand(dispatcher);
+	}
+
+	private static void createCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
 		LiteralCommandNode<CommandSourceStack> root = Commands
 				.literal("pay")
 				.executes(PayCommand::showUsage)
@@ -57,14 +62,14 @@ public abstract class PayCommand {
 									return builder.buildFuture();
 								})
 								.executes(PayCommand::run)
-										.then(Commands.argument("currency", StringArgumentType.string())
-												.suggests((ctx, builder) -> {
-													for (String name : ConfigManager.getConfig().getCurrenciesAsString()) {
-														builder.suggest(name);
-													}
-													return builder.buildFuture();
-												})
-												.executes(PayCommand::run))))
+								.then(Commands.argument("currency", StringArgumentType.string())
+										.suggests((ctx, builder) -> {
+											for (String name : ConfigManager.getConfig().getCurrenciesAsString()) {
+												builder.suggest(name);
+											}
+											return builder.buildFuture();
+										})
+										.executes(PayCommand::run))))
 				.build();
 
 		dispatcher.getRoot().addChild(root);

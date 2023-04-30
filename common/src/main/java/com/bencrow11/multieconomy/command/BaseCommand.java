@@ -29,11 +29,15 @@ public abstract class BaseCommand {
 	/**
 	 * Method to register and build the command.
 	 */
-	public static void register(CommandDispatcher<CommandSourceStack> dispatcher,
-	                            CommandBuildContext commandBuildContext,
-	                            Commands.CommandSelection commandSelection) {
+	public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+		createCommand(dispatcher);
+	}
 
+	public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext commandBuildContext, Commands.CommandSelection commandSelection) {
+		createCommand(dispatcher);
+	}
 
+	private static void createCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
 		LiteralCommandNode<CommandSourceStack> root = Commands
 				.literal(MultiEconomy.BASE_COMMAND)
 				.executes(BaseCommand::run)
@@ -55,8 +59,9 @@ public abstract class BaseCommand {
 		root.addChild(new ReloadCommand().build());
 	}
 
+
 	// Runs when the base command is run with no subcommands.
-	public static int run(CommandContext<CommandSourceStack> context) {
+	private static int run(CommandContext<CommandSourceStack> context) {
 		context.getSource().sendSystemMessage(Component.literal("§aRunning §bMultiEconomy §b" + MultiEconomy.VERSION +
 				"§a."));
 		return 1;

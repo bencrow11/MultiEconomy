@@ -13,6 +13,7 @@ package com.bencrow11.multieconomy;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
 
@@ -44,6 +45,28 @@ public abstract class ErrorManager {
 	 * @param player The player to send the errors to.
 	 */
 	public static void printErrorsToPlayer(ServerPlayer player) {
+		// If no errors exist, return.
+		if (errors.toArray().length == 0) {
+			return;
+		}
+
+		// Create the output string.
+		String outputString = "§6MultiEconomy Errors: \n§c";
+
+		// Add each error to the string.
+		for (String error : errors) {
+			outputString = outputString + error.trim() + "\n";
+		}
+
+		// Send the string to the player.
+		player.sendSystemMessage(Component.literal(outputString.trim()));
+	}
+
+	/**
+	 * Method to print all errors to a given player.
+	 * @param player The player to send the errors to.
+	 */
+	public static void printErrorsToPlayer(Player player) {
 		// If no errors exist, return.
 		if (errors.toArray().length == 0) {
 			return;

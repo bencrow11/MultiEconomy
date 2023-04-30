@@ -43,10 +43,15 @@ public abstract class BalCommand {
 	/**
 	 * Method to register and build the command.
 	 */
-	public static void register(CommandDispatcher<CommandSourceStack> dispatcher,
-	                            CommandBuildContext commandBuildContext,
-	                            Commands.CommandSelection commandSelection) {
+	public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+		createCommand(dispatcher);
+	}
 
+	public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext commandBuildContext, Commands.CommandSelection commandSelection) {
+		createCommand(dispatcher);
+	}
+
+	private static void createCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
 		LiteralCommandNode<CommandSourceStack> root = Commands
 				.literal("balance")
 				.executes(BalCommand::run)
@@ -122,5 +127,4 @@ public abstract class BalCommand {
 				isPlayer)));
 		return 1;
 	}
-
 }

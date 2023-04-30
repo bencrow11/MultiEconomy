@@ -15,7 +15,7 @@ MultiEconomy has a few requirements:
 - **MultiEconomy currency only supports Minecraft version 1.19.4**
 - **Fabric** requires [LuckPerms](https://luckperms.net/), [Minecraft Fabric](https://fabricmc.net/use/installer/) and [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api)
 - **Forge** requires [LuckPerms](https://luckperms.net/) and [Minecraft Forge](https://files.minecraftforge.net/net/minecraftforge/forge/)
-- 
+
 ## Features
 
 - Supports multiple currencies
@@ -38,8 +38,6 @@ Clone this repository, then run the following command:
 
 - On Linux or macOS:  ``./gradlew build``
 - On Windows:  ``gradlew build``
-
-
 
 ## Documentation
 

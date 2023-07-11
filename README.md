@@ -12,7 +12,7 @@ MultiEconomy is a minecraft mod made for both Forge and Fabric.
 It provides standard economy plugin features while supporting multiple currencies. You can run this mod like a regular currency mod with a singular currency too. For more details on how to use MultiEconomy, see the [wiki](https://github.com/bencrow11/MultiEconomy/wiki).
 
 MultiEconomy has a few requirements:
-- **MultiEconomy currently only supports Minecraft version 1.19.4**
+- **MultiEconomy currently supports Minecraft versions 1.19.4 and 1.20**
 - **Fabric** requires [LuckPerms](https://luckperms.net/), [Minecraft Fabric](https://fabricmc.net/use/installer/) and [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api)
 - **Forge** requires [LuckPerms](https://luckperms.net/) and [Minecraft Forge](https://files.minecraftforge.net/net/minecraftforge/forge/)
 
@@ -22,6 +22,7 @@ MultiEconomy has a few requirements:
 - Offline payments
 - Payment on specified currencies only
 - Admin commands to add / remove / set balances
+- Placeholders
 
 ## Screenshots
 

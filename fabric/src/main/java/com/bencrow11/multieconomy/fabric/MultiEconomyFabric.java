@@ -13,6 +13,7 @@ package com.bencrow11.multieconomy.fabric;
 
 import com.bencrow11.multieconomy.MultiEconomy;
 import com.bencrow11.multieconomy.fabric.events.PlayerJoinEvent;
+import com.bencrow11.multieconomy.fabric.placeholder.PlaceholderRegister;
 import com.bencrow11.multieconomy.fabric.registry.CommandRegistry;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -23,5 +24,6 @@ public class MultiEconomyFabric implements ModInitializer {
 		MultiEconomy.init();
 		ServerPlayConnectionEvents.JOIN.register(new PlayerJoinEvent()); // Registers PlayerJoin event handler.
 		CommandRegistry.registerCommands(); // Registers the commands.
+		PlaceholderRegister.registerPlaceholders();
 	}
 }

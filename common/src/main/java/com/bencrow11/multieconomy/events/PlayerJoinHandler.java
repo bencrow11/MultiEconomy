@@ -21,7 +21,7 @@ public class PlayerJoinHandler {
 	public PlayerJoinHandler(String username, UUID uuid) {
 		// If the player has changed their name, update it.
 		if (!AccountManager.hasAccount(username) &&
-				AccountManager.hasAccount(username)) {
+				AccountManager.hasAccount(uuid)) {
 			Account account = AccountManager.getAccount(uuid);
 			account.changeUsername(username);
 			AccountManager.updateAccount(account);

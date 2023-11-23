@@ -20,12 +20,18 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Creates the command "/pay <player> <amount> [currency]" in game.
@@ -46,13 +52,13 @@ public abstract class PayCommand {
 		LiteralCommandNode<CommandSourceStack> root = Commands
 				.literal("pay")
 				.executes(PayCommand::showUsage)
-				.then(Commands.argument("player", StringArgumentType.string())
-						.suggests((ctx, builder) -> {
-							for (String name : ctx.getSource().getOnlinePlayerNames()) {
-								builder.suggest(name);
-							}
-							return builder.buildFuture();
-						})
+				.then(Commands.argument("player", EntityArgument.players())
+//						.suggests((ctx, builder) -> {
+//							for (String name : ctx.getSource().getOnlinePlayerNames()) {
+//								builder.suggest(name);
+//							}
+//							return builder.buildFuture();
+//						})
 						.executes(PayCommand::showUsage)
 						.then(Commands.argument("amount", FloatArgumentType.floatArg())
 								.suggests((ctx, builder) -> {
@@ -80,7 +86,7 @@ public abstract class PayCommand {
 	 * @param context the source of the command.
 	 * @return integer to complete the command.
 	 */
-	public static int run(CommandContext<CommandSourceStack> context) {
+	public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
 		boolean isPlayer = context.getSource().isPlayer();
 		ServerPlayer playerSource = context.getSource().getPlayer();
 
@@ -95,7 +101,18 @@ public abstract class PayCommand {
 		}
 
 		// Collects the arguments from the command.
-		String playerArg = StringArgumentType.getString(context, "player");
+		List<ServerPlayer> playerArguments;
+		try {
+			playerArguments = EntityArgument.getPlayers(context, "player").stream().toList();
+			playerArguments.forEach(player -> pay(context, playerSource, isPlayer, player.getDisplayName().getString()));
+		} catch (CommandSyntaxException ex) {
+			String playerArg = context.getInput().split(" ")[1];
+			pay(context, playerSource, isPlayer, playerArg);
+		}
+		return -1;
+	}
+
+	private static int pay(CommandContext<CommandSourceStack> context, ServerPlayer playerSource, boolean isPlayer, String playerArg) {
 		float amountArg = FloatArgumentType.getFloat(context, "amount");
 
 		// Checks the player is online
@@ -159,7 +176,7 @@ public abstract class PayCommand {
 		// If the currency does not allow payments, inform the sender.
 		if (!currency.isAllowPayments()) {
 			context.getSource().sendSystemMessage(Component.literal(Utils.formatMessage("§cYou can not pay players with" +
-					" this currency.",
+							" this currency.",
 					isPlayer)));
 			return -1;
 		}
@@ -198,6 +215,7 @@ public abstract class PayCommand {
 		// Any other case, tell the player something went wrong.
 		context.getSource().sendSystemMessage(Component.literal(Utils.formatMessage("§cUnable to pay player.",
 				isPlayer)));
+
 		return -1;
 	}
 

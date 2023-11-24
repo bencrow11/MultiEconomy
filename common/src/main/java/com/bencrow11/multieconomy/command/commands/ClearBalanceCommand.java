@@ -19,11 +19,15 @@ import com.bencrow11.multieconomy.permission.PermissionManager;
 import com.bencrow11.multieconomy.util.Utils;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+
+import java.util.List;
 
 /**
  * Creates the command "/meco clear" in game.
@@ -38,13 +42,13 @@ public class ClearBalanceCommand implements SubCommandInterface {
 	public LiteralCommandNode<CommandSourceStack> build() {
 		return Commands.literal("clear")
 				.executes(this::showUsage)
-				.then(Commands.argument("player", StringArgumentType.string())
-						.suggests((ctx, builder) -> {
-							for (String name : ctx.getSource().getOnlinePlayerNames()) {
-								builder.suggest(name);
-							}
-							return builder.buildFuture();
-						})
+				.then(Commands.argument("player", EntityArgument.players())
+//						.suggests((ctx, builder) -> {
+//							for (String name : ctx.getSource().getOnlinePlayerNames()) {
+//								builder.suggest(name);
+//							}
+//							return builder.buildFuture();
+//						})
 						.executes(this::showUsage)
 						.then(Commands.argument("currency", StringArgumentType.string())
 								.suggests((ctx, builder) -> {
@@ -76,9 +80,19 @@ public class ClearBalanceCommand implements SubCommandInterface {
 				return -1;
 			}
 		}
+		List<ServerPlayer> playerArguments;
+		try {
+			playerArguments = EntityArgument.getPlayers(context, "player").stream().toList();
+			playerArguments.forEach(player -> pay(context, playerSource, isPlayer, player.getDisplayName().getString()));
+		} catch (CommandSyntaxException ex) {
+			String playerArg = context.getInput().split(" ")[1];
+			pay(context, playerSource, isPlayer, playerArg);
+		}
 
-		// Collect the arguments from the command.
-		String playerArg = StringArgumentType.getString(context, "player");
+		return -1;
+	}
+
+	private int pay(CommandContext<CommandSourceStack> context, ServerPlayer playerSource, boolean isPlayer, String playerArg) {
 		String currencyArg = StringArgumentType.getString(context, "currency");
 
 		// Check the player has an account.
